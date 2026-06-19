@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
-# Evaluate DETR with the shared COCO evaluator.  DATA=data/megafauna.yaml SPLIT=test bash test_detr.sh
+# Eval DETR (shared COCO). env: DATA SPLIT GPU WEIGHTS
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-DATA="${DATA:-$ROOT/data/megafauna.yaml}"
-SPLIT="${SPLIT:-test}"
-GPU="${GPU:-0}"
-TAG="$(basename "${DATA%.*}")"
-WEIGHTS="${WEIGHTS:-$ROOT/runs/detr_${TAG}/best}"
-
-python "$ROOT/detr/evaluate.py" -weights "$WEIGHTS" -data "$DATA" -split "$SPLIT" \
-  -out-json "$ROOT/runs/detr_${TAG}_pred_${SPLIT}.json" -g "$GPU"
+DATA="${DATA:-$ROOT/data/megafauna.yaml}"; SPLIT="${SPLIT:-test}"; TAG="$(basename "${DATA%.*}")"
+python "$ROOT/detr/evaluate.py" -weights "${WEIGHTS:-$ROOT/runs/detr_${TAG}/best}" \
+  -data "$DATA" -split "$SPLIT" -out-json "$ROOT/runs/detr_${TAG}_pred_${SPLIT}.json" -g "${GPU:-0}"

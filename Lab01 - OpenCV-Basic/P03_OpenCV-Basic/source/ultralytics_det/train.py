@@ -1,59 +1,40 @@
-"""Fine-tune a YOLOv8 or RT-DETR detector with Ultralytics.
+"""Train YOLOv8 / RT-DETR (Ultralytics). Same API for both, selected by -arch."""
+import argparse, os
 
-Both models share the exact same Ultralytics API and data format (a ``data.yaml``
-plus YOLO ``.txt`` labels), so one script trains either via ``--arch``.
-"""
-import argparse
-import os
+DEFAULT_WEIGHTS = {"yolov8": "yolov8l.pt", "rtdetr": "rtdetr-l.pt"}
 
 
-def load_model(arch, weights):
-    from ultralytics import YOLO, RTDETR
-    if arch == "rtdetr":
-        return RTDETR(weights)
-    return YOLO(weights)
-
-
-DEFAULT_WEIGHTS = {"yolov8": "yolov8s.pt", "rtdetr": "rtdetr-l.pt"}
-
-
-def get_args():
-    p = argparse.ArgumentParser(description="Train YOLOv8 / RT-DETR (Ultralytics)")
-    p.add_argument("-arch", choices=["yolov8", "rtdetr"], required=True)
-    p.add_argument("-data", required=True, help="path to data.yaml")
-    p.add_argument("-weights", default=None, help="pretrained weights (default per arch)")
-    p.add_argument("-epochs", type=int, default=100)
-    p.add_argument("-batch", type=int, default=16)
-    p.add_argument("-imgsz", type=int, default=640)
-    p.add_argument("-device", default="0", help="cuda id, 'cpu', or '0,1'")
-    p.add_argument("-project", default="runs", help="output root")
-    p.add_argument("-name", default=None, help="run name (default <arch>_<dataset>)")
-    return p.parse_args()
+def disable_pin():
+    # WSL: pinned-memory thread can raise 'CUDA out of memory' even with VRAM free.
+    if os.getenv("PIN_MEMORY", "true").lower() != "false":
+        return
+    try:
+        import ultralytics.data.build as b; b.PIN_MEMORY = False
+    except Exception:
+        pass
+    try:
+        import torch; torch.Tensor.pin_memory = lambda self, *a, **k: self
+    except Exception:
+        pass
+    print("[info] pin_memory disabled")
 
 
 def main():
-    args = get_args()
-    weights = args.weights or DEFAULT_WEIGHTS[args.arch]
-    dataset_tag = os.path.splitext(os.path.basename(args.data))[0]
-    name = args.name or "%s_%s" % (args.arch, dataset_tag)
-
-    print("=" * 70)
-    print("Training %s | data=%s | weights=%s | device=%s"
-          % (args.arch, args.data, weights, args.device))
-    print("=" * 70)
-
-    model = load_model(args.arch, weights)
-    model.train(
-        data=args.data,
-        epochs=args.epochs,
-        batch=args.batch,
-        imgsz=args.imgsz,
-        device=args.device,
-        project=args.project,
-        name=name,
-        exist_ok=True,
-    )
-    print("Done. Best checkpoint: %s/%s/weights/best.pt" % (args.project, name))
+    p = argparse.ArgumentParser()
+    p.add_argument("-arch", choices=["yolov8", "rtdetr"], required=True)
+    p.add_argument("-data", required=True); p.add_argument("-weights", default=None)
+    p.add_argument("-epochs", type=int, default=100); p.add_argument("-batch", type=int, default=16)
+    p.add_argument("-imgsz", type=int, default=640); p.add_argument("-workers", type=int, default=8)
+    p.add_argument("-device", default="0"); p.add_argument("-project", default="runs"); p.add_argument("-name", default=None)
+    a = p.parse_args()
+    disable_pin()
+    from ultralytics import YOLO, RTDETR
+    w = a.weights or DEFAULT_WEIGHTS[a.arch]
+    name = a.name or "%s_%s" % (a.arch, os.path.splitext(os.path.basename(a.data))[0])
+    model = RTDETR(w) if a.arch == "rtdetr" else YOLO(w)
+    model.train(data=a.data, epochs=a.epochs, batch=a.batch, imgsz=a.imgsz, workers=a.workers,
+                device=a.device, project=a.project, name=name, exist_ok=True)
+    print("Best: %s/%s/weights/best.pt" % (a.project, name))
 
 
 if __name__ == "__main__":
