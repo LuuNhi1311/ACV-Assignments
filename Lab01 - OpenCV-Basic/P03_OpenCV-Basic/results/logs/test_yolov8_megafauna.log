@@ -18,7 +18,7 @@ Eval yolov8: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab0
   AR@[small]         = -1.0000
   AR@[medium]        = 0.5474
   AR@[large]         = 0.2214
-FPS 18.25 | Params 43.6M
+FPS 16.15 | Params 43.6M
 Per-class AP:
   ray                0.0146
   shark              0.0982
@@ -43,7 +43,7 @@ Eval yolov8: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab0
   AR@[small]         = -1.0000
   AR@[medium]        = 0.5474
   AR@[large]         = 0.2214
-FPS 19.08 | Params 43.6M
+FPS 15.30 | Params 43.6M
 Per-class AP:
   ray                0.0146
   shark              0.0982
