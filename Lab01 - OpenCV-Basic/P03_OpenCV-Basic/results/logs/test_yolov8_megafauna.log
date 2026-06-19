@@ -6,23 +6,23 @@ index created!
 Eval yolov8: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/yolov8_megafauna/weights/best.pt [test] 253 imgs, 43.6M params
 
 ==== COCO bbox: yolov8 ====
-  AP@[.50:.95|all]   = 0.0376
-  AP@[.50|all]       = 0.0584
-  AP@[.75|all]       = 0.0422
+  AP@[.50:.95|all]   = 0.6653
+  AP@[.50|all]       = 0.7988
+  AP@[.75|all]       = 0.7139
   AP@[small]         = -1.0000
-  AP@[medium]        = 0.1916
-  AP@[large]         = 0.0301
-  AR@[maxDet=1]      = 0.0730
-  AR@[maxDet=10]     = 0.1688
-  AR@[maxDet=100]    = 0.2336
+  AP@[medium]        = 0.2904
+  AP@[large]         = 0.6718
+  AR@[maxDet=1]      = 0.5461
+  AR@[maxDet=10]     = 0.6815
+  AR@[maxDet=100]    = 0.7071
   AR@[small]         = -1.0000
-  AR@[medium]        = 0.5474
-  AR@[large]         = 0.2214
-FPS 16.15 | Params 43.6M
+  AR@[medium]        = 0.3789
+  AR@[large]         = 0.7126
+FPS 15.63 | Params 43.6M
 Per-class AP:
-  ray                0.0146
-  shark              0.0982
-  turtle             0.0001
+  ray                0.7091
+  shark              0.4511
+  turtle             0.8357
 [coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna.yaml [test]: 253 imgs, 293 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna/notebooks/datasets/MegaFaunaSplit/test/images/_annotations.coco.json
 loading annotations into memory...
 Done (t=0.01s)
@@ -31,20 +31,20 @@ index created!
 Eval yolov8: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/yolov8_megafauna/weights/best.pt [test] 253 imgs, 43.6M params
 
 ==== COCO bbox: yolov8 ====
-  AP@[.50:.95|all]   = 0.0376
-  AP@[.50|all]       = 0.0584
-  AP@[.75|all]       = 0.0422
+  AP@[.50:.95|all]   = 0.6653
+  AP@[.50|all]       = 0.7988
+  AP@[.75|all]       = 0.7139
   AP@[small]         = -1.0000
-  AP@[medium]        = 0.1916
-  AP@[large]         = 0.0301
-  AR@[maxDet=1]      = 0.0730
-  AR@[maxDet=10]     = 0.1688
-  AR@[maxDet=100]    = 0.2336
+  AP@[medium]        = 0.2904
+  AP@[large]         = 0.6718
+  AR@[maxDet=1]      = 0.5461
+  AR@[maxDet=10]     = 0.6815
+  AR@[maxDet=100]    = 0.7071
   AR@[small]         = -1.0000
-  AR@[medium]        = 0.5474
-  AR@[large]         = 0.2214
-FPS 15.30 | Params 43.6M
+  AR@[medium]        = 0.3789
+  AR@[large]         = 0.7126
+FPS 16.85 | Params 43.6M
 Per-class AP:
-  ray                0.0146
-  shark              0.0982
-  turtle             0.0001
+  ray                0.7091
+  shark              0.4511
+  turtle             0.8357
