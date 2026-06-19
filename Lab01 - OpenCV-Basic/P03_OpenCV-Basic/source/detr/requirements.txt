@@ -1,8 +1,10 @@
+# DETR (HuggingFace)
 torch>=2.1
 torchvision>=0.16
 transformers>=4.40
 timm>=0.9
 pycocotools
+pyyaml
 pillow
 opencv-python
 numpy

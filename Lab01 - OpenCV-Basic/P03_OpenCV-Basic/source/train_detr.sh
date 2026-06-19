@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
+# Fine-tune DETR (facebook/detr-resnet-50).  DATA=data/megafauna.yaml bash train_detr.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DATA="$ROOT/data"
 
+DATA="${DATA:-$ROOT/data/megafauna.yaml}"
 GPU="${GPU:-0}"
 EPOCHS="${EPOCHS:-50}"
 BATCH="${BATCH:-4}"
 LR="${LR:-1e-4}"
-MODEL="${MODEL:-facebook/detr-resnet-50}"
-OUT="$ROOT/detr/checkpoints"
+TAG="$(basename "${DATA%.*}")"
+OUT="$ROOT/runs/detr_${TAG}"
 
-python "$ROOT/detr/train.py" -data "$DATA" -model "$MODEL" \
-  -epochs "$EPOCHS" -batch "$BATCH" -lr "$LR" -out "$OUT" -g "$GPU"
+python "$ROOT/detr/train.py" -data "$DATA" -epochs "$EPOCHS" -batch "$BATCH" \
+  -lr "$LR" -out "$OUT" -g "$GPU"

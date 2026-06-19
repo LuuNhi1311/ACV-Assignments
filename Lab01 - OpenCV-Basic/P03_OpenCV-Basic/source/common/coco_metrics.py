@@ -1,8 +1,8 @@
 """Shared COCO-detection evaluator used by every model in this lab.
 
-Wrapping ``pycocotools`` here (the same library the YOLOv4 ``evaluate_metrics.py``
-uses) guarantees DETR, Faster R-CNN and YOLO are scored with an **identical**
-protocol, so the numbers in the report are directly comparable.
+Wrapping ``pycocotools`` in one place guarantees YOLOv8, DETR and RT-DETR are
+scored with an **identical** protocol, so the numbers in the report are directly
+comparable.
 
 ``evaluate_coco`` takes the ground-truth COCO json and a list of predictions::
 

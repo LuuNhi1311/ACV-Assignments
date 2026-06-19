@@ -1,0 +1,6 @@
+# YOLOv8 + RT-DETR (same framework)
+ultralytics>=8.1
+pycocotools
+pyyaml
+pillow
+numpy
