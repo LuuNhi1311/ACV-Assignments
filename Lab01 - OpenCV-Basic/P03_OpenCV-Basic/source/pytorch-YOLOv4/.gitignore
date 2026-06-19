@@ -1,0 +1,26 @@
+ttest
+*.weights
+*.pth
+*.onnx
+*.engine
+*.pyc
+*.infer
+*.npy
+
+z_demo_*
+
+__pycache__
+.idea
+.vscode
+runs
+log
+
+*.jpg
+*.json
+data/outcome
+
+# checkpoints / outputs (large)
+*.pt
+checkpoints/
+visualizations/
+*_12cls.cfg

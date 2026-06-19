@@ -1,0 +1,900 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{vietnam}
+
+\usepackage{lmodern}
+\usepackage{caption}
+\usepackage{subcaption}
+% \usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+\usepackage{algorithm}
+% \usepackage[noend]{algpseudocode}
+
+\usepackage{amsmath, amsthm, amssymb, latexsym, amscd, amsfonts, enumerate}
+\usepackage{mathtools}
+\usepackage[all,cmtip]{xy}
+\usepackage{color, fancyhdr, graphicx, wrapfig}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{xparse}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% =========================
+% Table
+% =========================
+\usepackage{tabularx}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{multirow}
+
+\usepackage{array}
+\usepackage{tabularx}
+
+% \newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+
+% =========================
+% New math symbols
+% =========================
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\NewDocumentCommand{\dsum}{%
+    e{^_}
+}{%
+  {%
+    \displaystyle\sum
+    \IfValueT{#1}{^{#1}}
+    \IfValueT{#2}{_{#2}}
+  }
+}%
+
+% =========================
+% Hyperlink color
+% =========================
+% \hypersetup{
+%     colorlinks=true,
+%     linkcolor=blue,
+%     filecolor=magenta,
+%     urlcolor=cyan,
+%     pdftitle={Overleaf Example},
+%     pdfpagemode=FullScreen,
+% }
+
+\newcommand{\runin}[1]{\par\medskip\noindent\textbf{#1}\hspace{0.4em}\ignorespaces}
+\newcommand{\infpsnr}{$\infty$}
+
+% =========================
+% Vị trí figure
+% =========================
+\usepackage{float}
+\usepackage{placeins}
+
+% =========================
+% Listings
+% =========================
+\usepackage{listings}
+\lstdefinestyle{myverbatim}{
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{white},
+    breaklines=true,
+    breakatwhitespace=true
+}
+
+% =========================
+% Canh lề
+% =========================
+\usepackage[
+    top=20mm,
+    bottom=10mm,
+    left=30mm,
+    right=20mm,
+    footskip=15mm,
+    includefoot
+]{geometry}
+
+% =========================
+% Bảng
+% =========================
+\usepackage{chngcntr}
+% \counterwithin{table}{section}
+% \counterwithin{figure}{section}
+
+% =========================
+% Cỡ chữ section, subsection, subsubsection
+% =========================
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\fontsize{15pt}{18pt}\bfseries}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\fontsize{13pt}{16pt}\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\fontsize{12pt}{15pt}\bfseries}
+  {\thesubsubsection}{1em}{}
+
+% =========================
+% Dãn dòng
+% =========================
+\usepackage{setspace}
+
+% =========================
+% Định dạng list
+% =========================
+\usepackage{enumitem}
+\setlist{nosep}
+
+% =========================
+% Thụt vào đầu dòng
+% =========================
+\usepackage{indentfirst}
+\setlength{\parindent}{0pt}
+
+% =========================
+% Trang bìa
+% =========================
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\newcommand\HRule{\rule{\textwidth}{1pt}}
+
+% =========================
+% Header và Footer
+% =========================
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Bài tập Thực hành 2}
+\rhead{Thị giác máy tính nâng cao}
+\cfoot{\thepage}
+
+\setlength{\headheight}{15pt}
+
+\renewcommand{\headrulewidth}{1.2pt}
+\renewcommand{\footrulewidth}{1.2pt}
+
+% =========================
+% Đánh số equation theo section
+% =========================
+\numberwithin{equation}{section}
+
+% ============================================================
+% BẮT ĐẦU DOCUMENT
+% ============================================================
+\begin{document}
+
+% Cỡ chữ normal content, line space
+\fontsize{12pt}{15pt}\selectfont
+\setlength{\parskip}{4pt}
+
+% Trang bìa
+\hypersetup{pageanchor=false}
+\input{cover}
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+
+% Mục lục
+\tableofcontents
+\newpage
+
+% 
+% =====================================================================
+\section{Giới thiệu}
+% =====================================================================
+
+Mục tiêu của bài thực hành là tìm hiểu cơ chế hoạt động của các phép lọc ảnh trong miền không gian, gồm làm trơn ảnh và phát hiện biên cạnh. Thay vì chỉ sử dụng trực tiếp các hàm trong OpenCV, nhóm chúng em tự cài đặt phần tính toán chính bằng NumPy, sau đó so sánh với OpenCV theo ba khía cạnh: chất lượng ảnh đầu ra, thời gian thực thi và mức sử dụng bộ nhớ.
+
+Báo cáo tập trung vào ba nội dung chính:
+\begin{itemize}
+  \item Toán tử tương quan 2D (correlation), bao gồm các siêu tham số kernel, padding, stride và kiểu xử lý rìa (border) của ảnh.
+  \item Các phép làm trơn ảnh: mean, median, Gaussian và bilateral.
+  \item Các thuật toán phát hiện biên cạnh: Roberts, Prewitt, Sobel, Scharr, Laplacian, Laplacian of Gaussians (LoG), Difference of Gaussians (DoG) và Canny.
+\end{itemize}
+
+Các phép làm trơn được thực hiện trên ảnh màu. Với nhóm thuật toán phát hiện biên cạnh, ảnh RGB được chuyển sang ảnh xám theo công thức độ chói BT.601~\cite{bt601}:
+\begin{equation}
+Y = 0.299R + 0.587G + 0.114B.
+\label{eq:gray}
+\end{equation}
+Kết quả từ NumPy được so sánh với kết quả OpenCV bằng các độ đo MAE, PSNR, thời gian chạy và bộ nhớ cần dùng.
+
+% =====================================================================
+\section{Toán tử tương quan}
+% =====================================================================
+
+Trong miền không gian, nhiều phép lọc ảnh có thể được thực hiện bằng cách trượt một bộ lọc (kernel) trên ảnh đầu vào. Đây chính là \textbf{toán tử tương quan} (correlation), ký hiệu là $\star$, một toán tử rất quan trọng trong thị giác máy tính.
+
+Với kernel $K$ kích thước $k_h\times k_w$ và ảnh xám đầu vào $A$ kích thước $H \times W$, 
+kết quả đầu ra $Y = A \star K$ được tính bởi:
+\begin{equation}
+Y_{i,j}
+= \sum_{u=0}^{k_h-1}\sum_{v=0}^{k_w-1}
+K(u, v)\,A(i + u,\ j + v),
+\label{eq:correlation}
+\end{equation}
+với $i=0,1,\dots k_h-1$ và $j=0,1,\dots,k_w-1$. Rõ ràng kích thước của Y là $(H-k_h+1, W-k_w + 1)$. Minh họa cho quá trình tính toán này được thể hiện trong Hình~\ref{fig:corelation_illu}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{figures/conv.png}
+  \caption{Minh họa quá trình tính toán của toán tử tương quan.}
+  \label{fig:corelation_illu}
+\end{figure}
+
+Để có thể giữ cho kích thước của $Y$ giống với $A$, ta sử dụng kỹ thuật thêm \textbf{lề} (padding). 
+Ta thêm vào các cạnh của $A$ một lượng hằng số giá trị 0 (hoặc các giá trị khác). Khi đó, kích thước của ma trận mới $A_{pad}$ là $(H + 2 p_h, W + 2 p_w)$. Nếu chọn
+\begin{equation}
+  p_h = \frac{k_h - 1}{2};\;\;p_w = \frac{k_w - 1}{2};\;\;
+  \label{eq:padding_same}
+\end{equation}
+và áp dụng toán tử tương quan giữa $A_{pad}$ với $K$, ta sẽ có ma trận kết quả $Y$ với kích thước $(H, W)$, tức là giống với $A$. Minh họa cho quá trình thêm lề và tính tương quan được thể hiện trong Hình~\ref{fig:padding_illu}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{figures/conv_pad.png}
+  \caption{Minh họa về lề (padding) trong toán tử tương quan.}
+  \label{fig:padding_illu}
+  
+\end{figure}
+
+
+Ngoài ra, việc trượt bộ lọc trên đầu vào còn có thể được thực hiện với \textbf{bước trượt} (stride) $s > 1$ (như Hình~\ref{fig:stride_illu}).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{figures/conv_stride.png}
+  \caption{Minh họa về bước trượt (stride) trong toán tử tương quan.}
+  \label{fig:stride_illu}
+\end{figure}
+
+Do vậy, với ma trận đầu vào $A \in \mathbb{R}^{H \times W}$ , bộ lọc $K \in \mathbb{R}^{k_h \times k_w}$, độ rộng lề $p_h$ và $pw$, bước trượt $s$, đầu ra của toán tử tương quan là ma trận $Y \in \mathbb{R}^{h \times w}$, với
+\begin{equation}
+  h = \left\lfloor \frac{H + 2 p_h - k_h}{s} \right\rfloor + 1; \;
+  w = \left\lfloor \frac{W + 2 p_w - k_w}{s} \right\rfloor + 1; \;
+\end{equation}
+
+Để cho đơn giản, ta thường sử dụng bộ lọc kích thước vuông ($k_h = k_w$) và độ rộng lề $p_h = p_w$.
+
+
+Một cách tổng quát, nếu kích thước của ảnh đầu $A$ vào là $(H, W, C)$ với $C$ là số kênh màu. Khi đó bộ lọc cũng có thể được mở rộng ra với số kênh tương ứng, tức là bộ lọc $K$ có kích thước $(k_h, k_w, C)$. Đầu ra của toán tử tương quan lúc nãy vẫn là một ma trận một chiều $Y$. Minh họa cho chi tiết này được thể hiện trong Hình~\ref{fig:correlate_multi_channel}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/conv_multi-c.png}
+  \caption{Minh họa cho trường hợp tổng quát với ảnh đầu vào có nhiều kênh màu của toán tử tương quan.}
+  \label{fig:correlate_multi_channel}
+\end{figure}
+
+Trong cài đặt của nhóm, toán tử tương quan hỗ trợ các siêu tham số: kích thước bộ lọc, bước trượt (stride), kiểu padding và kiểu border, trong đó:
+\begin{itemize}
+  \item \texttt{padding}: cách tính độ rộng của lề, bao gồm \texttt{same} (tự tính lề như công thức~\ref{eq:padding_same}), \texttt{valid} (không thêm lề), hoặc giá trị tùy chọn.
+  \item \texttt{border}: cách tính giá trị để thêm vào lề, gồm \texttt{constant} (hằng số),
+  \texttt{reflect} (phản chiếu các giá trị bên trong), \texttt{replicate} (lặp lại giá trị gần nhất) và \texttt{wrap} (lấy từ phía đối diện).
+  \item \texttt{padding\_value}: giá trị dùng khi \texttt{border} là
+  \texttt{constant}.
+\end{itemize}
+
+Mã giả cho cách cài đặt của nhóm được trình bày trong Thuật toán~\ref{algo:correlation}. Về độ phức tạp thuật toán, với ảnh kích thước $H\times W$, $C$ kênh màu và kernel
+$k_h\times k_w$, toán tử tương quan có độ phức tạp là:
+\begin{equation}
+\mathcal{O}(H \times W \times C \times k_h \times k_w).
+\label{eq:correlation-complexity}
+\end{equation}
+
+
+\begin{algorithm}[H]
+\caption{Tương quan 2D dùng NumPy slicing}
+\label{algo:correlation}
+\begin{algorithmic}[1]
+\Require Ảnh đầu vào $I$, kernel $K$, stride $(s_y,s_x)$, padding và kiểu border
+\Ensure Ảnh kết quả $O$
+\State $I_{\text{pad}} \gets$ pad $I$ theo kích thước kernel và kiểu border
+\State Tính kích thước $H_{\text{out}}$ và $W_{\text{out}}$ từ $I_{\text{pad}}$, $K$ và stride
+\State Khởi tạo $O \gets 0$
+\For{$i = 0$ \textbf{to} $k_h-1$}
+  \For{$j = 0$ \textbf{to} $k_w-1$}
+    \State $R_i \gets i:i+s_yH_{\text{out}}:s_y$
+    \State $C_j \gets j:j+s_xW_{\text{out}}:s_x$
+    \State $O[R_i, C_j] \gets O[R_i, C_j] + K(i,j) I_{\text{pad}}[R_i, C_j]$
+  \EndFor
+\EndFor
+\State \Return $O$
+\end{algorithmic}
+\end{algorithm}
+Với tính chất mỗi điểm ảnh đầu ra có thể được tính độc lập sau khi đã xác định vùng đầu vào liên quan,
+toán tử này có thể được tính toán một cách song song. Các thư viện như OpenCV, Pytorch, TensorFlow thường khai thác đặc điểm này bằng vectorization, SIMD, đa luồng hoặc GPU. 
+Cài đặt NumPy trong bài thực hành này của nhóm chúng em ưu tiên minh bạch thuật toán, nên tốc độ thấp hơn OpenCV dù cùng một công thức toán học.
+
+Trong OpenCV, toán tử tương quan tương đồng với hàm \texttt{cv2.filter2D}.
+Ngược với toán tử tương quan là toán tử tích chập (convolution). Trong tích
+chập, chúng ta xoay kernel trước khi tính tổng có trọng số. Sự khác nhau này
+được minh họa trong Hình~\ref{fig:corr-conv}. Một lưu ý quan trọng là
+trong các thư viện học sâu, toán tử thường được gọi là convolution nhưng cách
+tính thực tế thường tương ứng với correlation.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{figures/correlation_convolution.png}
+\caption{Sự khác nhau giữa tương quan và convolution. Convolution sử dụng kernel
+đã xoay $180^\circ$, trong khi tương quan giữ nguyên thứ tự phần tử của kernel}
+\label{fig:corr-conv}
+\end{figure}
+
+% =====================================================================
+\section{Hàm cường độ sáng và đạo hàm ảnh}
+% =====================================================================
+
+Các phép làm trơn ảnh và phát hiện biên cạnh đều liên quan trực tiếp đến mức độ biến thiên của \textbf{hàm cường độ sáng} của ảnh:
+\begin{itemize}
+  \item Làm trơn ảnh có xu hướng làm giảm các biến thiên cục bộ
+  \item Phát hiện biên cạnh cần tìm những vị trí mà cường độ thay đổi mạnh.
+\end{itemize}
+Do đó, trước khi trình bày các thuật toán cụ thể, nhóm chúng em mô tả ảnh dưới dạng hàm cường độ và xét các đạo hàm của hàm này.
+
+\subsection{Hàm cường độ sáng}
+
+Với ảnh xám, ta có thể xem ảnh như một hàm rời rạc $I(x,y)$, trong đó $(x,y)$ là tọa độ điểm ảnh và $I(x,y)$ là giá trị cường độ sáng tại vị trí đó. Lúc này:
+\begin{itemize}
+  \item Nếu các giá trị $I(x,y)$ thay đổi chậm trong một vùng lân cận, vùng đó thường tương ứng với bề mặt tương đối đồng nhất.
+  \item Ngược lại, nếu $I(x,y)$ thay đổi đột ngột, vị trí đó thường là ứng viên biên cạnh hoặc chi tiết ảnh.
+\end{itemize}
+
+Ví dụ trong Hình~\ref{fig:intensity_illu}, khi kẻ một đường thẳng cắt ngang một ảnh và vẽ ra một đồ thị thể hiện các giá trị cường độ sáng dọc theo đường thẳng đó, ta thấy rằng trên đồ thị có nhiều vị trí mà cường độ sáng thay đổi đột ngột (tương ứng với từ trắng thành đen và ngược lại). Những vị trí đó có thể là các điểm cạnh.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.5\textwidth]{figures/example_intensity.png}
+  \caption{Minh họa về sự thay đổi đột ngột của giá trị hàm cường độ sáng}
+  \label{fig:intensity_illu}
+  
+\end{figure}
+
+\subsection{Đạo hàm ảnh}
+
+Đạo hàm bậc nhất của hàm cường độ theo hai phương tạo thành vector gradient:
+\begin{equation}
+\nabla I =
+\begin{bmatrix}
+\frac{\partial I}{\partial x}\\[2pt]
+\frac{\partial I}{\partial y}
+\end{bmatrix},
+\qquad
+\|\nabla I\|=\sqrt{I_x^2+I_y^2}.
+\label{eq:gradient}
+\end{equation}
+
+Độ lớn gradient cho biết mức thay đổi cường độ tại một điểm ảnh. Khi $\|\nabla I\|$ lớn, điểm ảnh đó có khả năng nằm gần biên cạnh (minh họa trong Hình~\ref{fig:image_grad_illu}).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/image_grad_illu.png}
+  \caption{Minh họa về đạo hàm ảnh theo phương Ox, phương Oy và ảnh tổng của hai đạo hàm ảnh đó}
+  \label{fig:image_grad_illu}
+\end{figure}
+
+Lưu ý rằng, trong ảnh số, các đạo hàm này không được tính liên tục mà được xấp xỉ bằng sai phân hữu hạn giữa các điểm ảnh lân cận. Ví dụ:
+\begin{equation}
+  \frac{{\partial I\left( {x,y} \right)}}{{\partial x}} = \lim_{\Delta x \to 0} \frac{{I\left( {x + \Delta x,y} \right) - I\left( {x,y} \right)}}{{\Delta x}}\approx I\left( {x + 1,y} \right) - I\left( {x,y} \right)
+\end{equation}
+Do đó, việc xấp xỉ đạo hàm có thể được thực hiện bằng toán tử tương quan với các giá trị kernel phù hợp:
+\begin{equation}
+I_x \approx I \star K_x,\qquad I_y \approx I \star K_y.
+\label{eq:gradient-correlation}
+\end{equation}
+
+\subsection{Đạo hàm bậc hai của ảnh}
+
+Đạo hàm bậc hai mô tả sự thay đổi của gradient. Trong xử lý ảnh, toán tử Laplacian thường được dùng để tổng hợp đạo hàm bậc hai theo hai phương:
+\begin{equation}
+\nabla^2 I = \frac{\partial^2 I}{\partial x^2}
++ \frac{\partial^2 I}{\partial y^2}.
+\label{eq:laplacian}
+\end{equation}
+Laplacian có thể làm nổi bật các vùng cường độ thay đổi mạnh theo nhiều hướng, nhưng đồng thời cũng rất nhạy với nhiễu vì đạo hàm bậc hai khuếch đại các biến thiên nhỏ. Đây là lý do chúng ta có các thuật toán biến thể thường kết hợp Laplacian với bước làm trơn Gaussian.
+
+Bằng biến đổi đại số, ta có thể xấp xỉ đạo hàm bậc hai của ảnh như sau:
+\begin{equation}
+  {\nabla ^2}I\left( {{x_0},{y_0}} \right) \approx I\left( {x + 1,y} \right) + I\left( {x,y + 1} \right) - 4I\left( {x,y} \right) + I\left( {x - 1,y} \right) + I\left( {x,y - 1} \right)
+\end{equation}
+Điều đó có nghĩa là ta cũng có thể sử dụng toán tử tương quan để xấp xỉ đạo hàm bậc hai của ảnh, với bộ lọc
+\begin{equation}
+  K_{\text{Lap}}=
+\begin{bmatrix}
+0&1&0\\
+1&-4&1\\
+0&1&0
+\end{bmatrix}.
+\label{eq:laplacian-kernel}
+\end{equation}
+
+% =====================================================================
+\section{Làm trơn ảnh}
+% =====================================================================
+
+Làm trơn ảnh có mục tiêu làm giảm biến thiên cục bộ của cường độ sáng. Trong bài thực hành, các bộ lọc được khảo sát gồm mean, Gaussian, median và bilateral. Có thể chia các bộ lọc này thành hai nhóm: bộ lọc tuyến tính và bộ lọc phi tuyến.
+
+\subsection{Các bộ lọc tuyến tính}
+
+Bộ lọc tuyến tính tính giá trị đầu ra bằng tổ hợp tuyến tính của các điểm ảnh trong vùng lân cận. Trong nhóm này, mean filter và Gaussian filter đều có thể được cài đặt trực tiếp bằng toán tử tương quan.
+
+\runin{Mean filter.} Mean filter thay mỗi điểm ảnh bằng trung bình cộng của các điểm ảnh trong cửa sổ lân cận:
+\begin{equation}
+K_{\text{mean}} = \frac{1}{k^2}\mathbf{1}_{k\times k}.
+\label{eq:mean}
+\end{equation}
+Do mọi phần tử trong kernel có cùng trọng số, mean filter làm giảm nhiễu bằng cách trung bình hóa cường độ trong vùng lân cận. Tuy nhiên, phép lọc này không phân biệt vùng phẳng và vùng biên cạnh nên thường làm mờ chi tiết.
+
+\runin{Gaussian filter.} Gaussian filter sử dụng trọng số giảm dần theo khoảng cách đến tâm kernel:
+\begin{equation}
+G(x,y)=\frac{1}{2\pi\sigma^2}
+\exp\left(-\frac{x^2+y^2}{2\sigma^2}\right).
+\label{eq:gaussian}
+\end{equation}
+Tham số $\sigma$ điều khiển độ rộng của phân bố Gaussian. Khi $\sigma$ lớn, trọng số được phân bố rộng hơn và mức làm mờ tăng lên. Trong cài đặt, kernel 2D được tạo từ tích ngoài của hai kernel Gaussian 1D, tương tự quy ước của OpenCV.
+
+Hình~\ref{fig:gaussian-surface} và Hình~\ref{fig:gaussian-values} minh họa sự thay đổi của giá trị kernel theo $\sigma$ và kích thước kernel. Hình~\ref{fig:gaussian-sigma} cho thấy $\sigma$ lớn tạo mức làm trơn mạnh hơn trên ảnh.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{figures/gaussian_sigma_surface.png}
+\caption{Gaussian kernel với cùng kích thước nhưng khác $\sigma$. Khi $\sigma$
+tăng, đỉnh kernel thấp hơn và trọng số được phân bố rộng hơn trên vùng lân cận
+.}
+\label{fig:gaussian-surface}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/gaussian_kernel_values.png}
+\caption{Ví dụ các Gaussian kernel rời rạc với kích thước khác nhau. Kernel lớn
+hơn cho phép biểu diễn phân bố Gaussian trên vùng lân cận rộng hơn.}
+\label{fig:gaussian-values}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{figures/gaussian_diff_sigma.png}
+\caption{Ảnh hưởng của $\sigma$ đến mức làm trơn. Khi $\sigma$ tăng, vùng ảnh
+được trung bình hóa rộng hơn và chi tiết nhỏ bị làm mờ mạnh hơn.}
+\label{fig:gaussian-sigma}
+\end{figure}
+
+\subsection{Các bộ lọc phi tuyến}
+
+Không giống các bộ lọc tuyến tính, bộ lọc phi tuyến không biểu diễn đầu ra đơn thuần bằng tổng có trọng số cố định của vùng lân cận. Nhóm này thường có khả năng xử lý nhiễu hoặc bảo toàn biên cạnh tốt hơn, nhưng chi phí tính toán cao hơn.
+
+\runin{Median filter.} Median filter chọn trung vị của các điểm ảnh trong cửa sổ $k\times k$:
+\begin{equation}
+O(y,x)=\operatorname{median}\{I(u,v)\mid (u,v)\in \Omega_{y,x}\}.
+\label{eq:median}
+\end{equation}
+Vì chọn một giá trị có sẵn trong vùng lân cận, median filter phù hợp với nhiễu ngoại lai và nhiễu muối tiêu. Hạn chế chính là chi phí tính toán tăng nhanh khi kernel lớn vì cần tìm trung vị trong từng cửa sổ. Hình~\ref{fig:median-kernel} minh họa cách median filter chọn giá trị trung vị trong vùng lân cận.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{figures/median_kernel.jpg}
+\caption{Minh họa median filter. Giá trị trung vị trong cửa sổ lân cận được chọn
+làm giá trị đầu ra thay vì lấy trung bình có trọng số.}
+\label{fig:median-kernel}
+\end{figure}
+
+\runin{Bilateral filter.} Bilateral filter kết hợp hai thành phần trọng số: khoảng cách không gian và độ khác biệt cường độ:
+\begin{equation}
+O(p)=\frac{1}{W_p}\sum_{q\in\Omega} I(q)
+\exp\left(-\frac{\|p-q\|^2}{2\sigma_s^2}\right)
+\exp\left(-\frac{\|I(p)-I(q)\|^2}{2\sigma_r^2}\right).
+\label{eq:bilateral}
+\end{equation}
+Trong đó, $\sigma_s$ điều khiển mức suy giảm theo khoảng cách không gian và $\sigma_r$ điều khiển mức suy giảm theo khác biệt cường độ. Nhờ thành phần màu, những điểm ảnh nằm ở phía bên kia biên cạnh thường có trọng số nhỏ, nên bilateral filter có khả năng làm trơn vùng phẳng trong khi vẫn bảo toàn biên cạnh tốt hơn mean và Gaussian.
+
+% =====================================================================
+\section{Phát hiện biên cạnh}
+% =====================================================================
+
+Phát hiện biên cạnh khai thác trực tiếp các biến thiên cường độ mà nhóm chúng em đã trình bày ở phần trước. Trong báo cáo này, các thuật toán được chia thành ba nhóm: toán tử gradient bậc nhất, toán tử Laplacian bậc hai và thuật toán Canny.
+
+\subsection{Các toán tử gradient}
+
+Các toán tử gradient xấp xỉ $I_x$ và $I_y$ bằng các kernel đạo hàm, sau đó kết hợp hai đáp ứng này để tạo bản đồ độ lớn gradient. Roberts, Prewitt, Sobel và Scharr đều thuộc nhóm này.
+
+\begin{itemize}
+  \item \textbf{Roberts}: sử dụng kernel nhỏ theo hai đường chéo, nhạy với thay đổi cục bộ nhưng dễ thiếu cạnh ngang, cạnh dọc và nhạy với nhiễu.
+  \item \textbf{Prewitt}: dùng kernel $3\times3$ với trọng số đều, ổn định hơn Roberts khi xét các biên ngang và dọc.
+  \item \textbf{Sobel}: tăng trọng số ở hàng hoặc cột trung tâm, nhờ đó kết hợp xấp xỉ gradient với một mức làm trơn nhẹ để giảm nhạy cảm với nhiễu.
+  \item \textbf{Scharr}: điều chỉnh hệ số kernel để cải thiện độ chính xác hướng gradient, đặc biệt khi dùng kernel kích thước nhỏ.
+\end{itemize}
+
+\begin{equation}
+\begin{aligned}
+K_x^{\text{Roberts}} &=
+\begin{bmatrix}
+1&0\\
+0&-1
+\end{bmatrix},
+&
+K_y^{\text{Roberts}} &=
+\begin{bmatrix}
+0&1\\
+-1&0
+\end{bmatrix},\\[6pt]
+K_x^{\text{Prewitt}} &=
+\begin{bmatrix}
+-1&0&1\\
+-1&0&1\\
+-1&0&1
+\end{bmatrix},
+&
+K_x^{\text{Sobel}} &=
+\begin{bmatrix}
+-1&0&1\\
+-2&0&2\\
+-1&0&1
+\end{bmatrix},\\[6pt]
+K_x^{\text{Scharr}} &=
+\begin{bmatrix}
+-3&0&3\\
+-10&0&10\\
+-3&0&3
+\end{bmatrix}.
+\end{aligned}
+\end{equation}
+Với Prewitt, Sobel và Scharr, kernel theo phương $y$ là chuyển vị của kernel theo phương $x$. Roberts dùng trực tiếp cặp kernel chéo $2\times2$ như trên.
+
+\subsection{Các toán tử Laplacian}
+
+Các toán tử Laplacian dựa trên đạo hàm bậc hai. Khác với nhóm gradient, nhóm này không tách riêng hướng ngang và dọc khi hiển thị kết quả, mà tập trung vào đáp ứng thể hiện sự thay đổi của gradient.
+
+\runin{Laplacian.} Trong bài thực hành, Laplacian được cài đặt bằng kernel:
+\begin{equation}
+K_{\text{Lap}}=
+\begin{bmatrix}
+0&1&0\\
+1&-4&1\\
+0&1&0
+\end{bmatrix}.
+\label{eq:laplacian-edge-kernel}
+\end{equation}
+Laplacian làm nổi bật các vùng cường độ thay đổi mạnh nhưng nhạy với nhiễu do sử dụng đạo hàm bậc hai.
+
+\runin{Laplacian of Gaussian (LoG)} làm trơn ảnh bằng Gaussian trước khi tính Laplacian:
+\begin{equation}
+\text{LoG}(I)=\nabla^2(G_\sigma \star I).
+\label{eq:log}
+\end{equation}
+Bước Gaussian giúp giảm nhiễu trước khi áp dụng đạo hàm bậc hai. Trong cài đặt, ta có thể tính được LoG bằng hai lần áp dụng toán tử tương quan với Gaussian kernel và Laplacian kernel.
+
+\runin{Difference of Gaussians (DoG)} lấy hiệu hai ảnh đã được làm trơn bởi hai Gaussian kernel có độ lệch chuẩn khác nhau:
+\begin{equation}
+\text{DoG}(I)=G_{\sigma_1}\star I - G_{\sigma_2}\star I,
+\label{eq:dog}
+\end{equation}
+với $\sigma_2>\sigma_1$. DoG thường được xem như một xấp xỉ của LoG và có thể được tính bằng toán tử tương quan với hai Gaussian kernel.
+
+\subsection{Canny}
+
+Canny là một thuật toán phát hiện biên cạnh gồm nhiều giai đoạn. Khác với các toán tử gradient đơn giản, Canny không chỉ tính độ lớn gradient mà còn làm mảnh và liên kết các điểm biên cạnh. Quy trình tổng quan như sau:
+\begin{enumerate}
+  \item Làm trơn ảnh bằng Gaussian để giảm nhiễu.
+  \item Tính độ lớn và hướng gradient bằng Sobel.
+  \item Áp dụng non-maximum suppression để làm mảnh biên cạnh.
+  \item Dùng hai ngưỡng thấp/cao để phân loại biên cạnh mạnh và biên cạnh yếu.
+  \item Dùng hysteresis để giữ các biên cạnh yếu có liên thông với biên cạnh mạnh.
+\end{enumerate}
+
+Cụ thể về các bước trong thuật toán Canny như sau:
+
+\runin{Bước 1: Làm trơn ảnh.} Ảnh đầu vào được làm trơn bằng Gaussian để giảm nhiễu trước khi tính đạo hàm.
+
+\runin{Bước 2: Tính độ lớn và hướng gradient.} Sau khi làm trơn, thuật toán dùng Sobel để xấp xỉ hai thành phần gradient $I_x$ và $I_y$. Từ đó, độ lớn và hướng gradient tại mỗi điểm ảnh được tính bởi:
+\begin{equation}
+M(x,y)=\sqrt{I_x(x,y)^2+I_y(x,y)^2},\qquad
+\theta(x,y)=\operatorname{atan2}(I_y(x,y), I_x(x,y)).
+\label{eq:canny-gradient}
+\end{equation}
+Độ lớn $M$ cho biết mức thay đổi cường độ, còn hướng $\theta$ cho biết phương biến thiên mạnh nhất. Trong các cách cài đặt của Canny, $\theta$ thường được ``làm tròn'' về một số hướng chính theo các phương $0^\circ$, $45^\circ$, $90^\circ$ và $135^\circ$ (tức là gồm 4 phương, 8 hướng) để thuận tiện cho các bước sau.
+
+Hình~\ref{fig:canny_gradient_round} minh họa về hướng của vector gradient và cách làm tròn $\theta$. Ví dụ, một vector gradient có hướng là góc $\theta$. Nếu $- \frac{\pi }{8} \le \theta  \le \frac{\pi }{8}$ hoặc $- \frac{{7\pi }}{8} \le \theta  \le \frac{{7\pi }}{8}$ thì ta xem nó là vector thuộc phương 0.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/canny_grad_direction.png}
+  \caption{Minh họa về hướng của vector gradient và cách làm tròn hướng trong Canny.}
+  \label{fig:canny_gradient_round}
+  
+\end{figure}
+
+\runin{Bước 3: Non-maximum suppression.} Sau bước gradient, ảnh nhận được thường chứa nhiều biên cạnh với độ dày lớn. Non-maximum suppression (NMS) làm mảnh biên cạnh bằng cách chỉ giữ những điểm có độ lớn gradient là cực đại cục bộ theo hướng gradient. 
+
+Cụ thể, với mỗi điểm ảnh $(x,y)$, thuật toán so sánh $M(x,y)$ với hai điểm lân cận nằm trên cùng phương gradient. Nếu $M(x,y)$ không lớn hơn hai điểm này, điểm đó bị loại khỏi bản đồ ứng viên biên cạnh. Hình~\ref{fig:canny-nms-direction} minh họa ý tưởng so sánh theo hướng gradient trong NMS. Hình~\ref{fig:canny-nms-result} cho thấy sau NMS, các vùng biên cạnh trở nên mảnh hơn rõ rệt so với bản đồ gradient ban đầu.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.4\linewidth]{figures/canny_nms_direction.png}
+\caption{Minh họa cách NMS so sánh một điểm ứng viên với hai điểm lân cận theo hướng gradient.}
+\label{fig:canny-nms-direction}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/canny_nms_result.png}
+\caption{So sánh bản đồ gradient trước NMS và kết quả sau NMS. Sau bước này, biên cạnh ứng viên mảnh hơn do các điểm không phải cực đại cục bộ bị loại bỏ.}
+\label{fig:canny-nms-result}
+\end{figure}
+
+\runin{Bước 4: Double threshold.} Sau NMS, thuật toán dùng hai ngưỡng $T_{\text{low}}$ và $T_{\text{high}}$ để phân loại điểm ảnh:
+\begin{itemize}
+  \item Nếu $M(x,y)\ge T_{\text{high}}$, điểm ảnh được xem là biên cạnh mạnh.
+  \item Nếu $M(x,y)<T_{\text{low}}$, điểm ảnh bị loại bỏ.
+  \item Nếu $T_{\text{low}}\le M(x,y)<T_{\text{high}}$, điểm ảnh được xem là biên cạnh yếu và cần xét thêm ở bước sau.
+\end{itemize}
+Hình~\ref{fig:canny-hysteresis-thresholds} minh họa vai trò của hai ngưỡng trong việc phân loại biên cạnh mạnh, biên cạnh yếu và điểm không phải biên cạnh.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.48\linewidth]{figures/canny_hysteresis_thresholds.png}
+\caption{Minh họa double threshold trong Canny. Các điểm vượt ngưỡng cao (A, B) được giữ lại, các điểm dưới ngưỡng thấp (D) bị loại, còn các điểm ở giữa hai ngưỡng (C, E) cần tiếp tục xử lý.}
+\label{fig:canny-hysteresis-thresholds}
+\end{figure}
+
+\runin{Bước 5: Hysteresis.} Hysteresis quyết định xem có giữ các biên cạnh yếu hay không. Một điểm yếu được giữ lại nếu nó liên thông với ít nhất một điểm biên cạnh mạnh (xét trong lân cận 8 điểm). Ngược lại thì nó bị loại bỏ
+
+Hình~\ref{fig:canny-hysteresis-result} minh họa kết quả trước và sau hysteresis. Có thể thấy bước này biến bản đồ ứng viên sau NMS thành bản đồ biên cạnh nhị phân cuối cùng.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/canny_hysteresis_result.png}
+\caption{Kết quả trước và sau hysteresis. Các biên cạnh yếu có liên thông với biên cạnh mạnh được giữ lại, trong khi các đáp ứng cô lập bị loại bỏ.}
+\label{fig:canny-hysteresis-result}
+\end{figure}
+
+
+% =====================================================================
+\section{Thiết lập thí nghiệm và độ đo đánh giá}
+% =====================================================================
+
+Các thí nghiệm sử dụng ảnh mẫu \texttt{lena.jpg} kích thước $1024 \times 680$ điểm ảnh, 3 kênh màu. Mỗi kết quả từ cài đặt thủ công bằng NumPy được so sánh trực tiếp với hàm tương ứng của OpenCV theo các độ đo: \textbf{thời gian thực thi}, \textbf{mức sử dụng bộ nhớ}, \textbf{MAE} và \textbf{PSNR}. Thời gian và bộ nhớ thể hiện chi phí tính toán (giá trị càng thấp càng tốt); MAE và PSNR thể hiện độ khớp với OpenCV.
+
+\textbf{Lưu ý.} Vì các hàm lõi của OpenCV được cài đặt và tối ưu bằng C/C++ nên lượng bộ nhớ đo từ phía Python có thể thấp hơn mức OpenCV thực sự cấp phát.
+
+MAE đo sự sai khác tuyệt đối trung bình giữa hai ảnh:
+\begin{equation}
+\operatorname{MAE}(A,B)=\frac{1}{N}\sum_{i=1}^{N}|A_i-B_i|.
+\label{eq:mae}
+\end{equation}
+PSNR đo mức sai khác tương đối so với toàn miền cường độ 8-bit:
+\begin{equation}
+\operatorname{PSNR}(A,B)=10\log_{10}\left(\frac{255^2}{\operatorname{MSE}(A,B)}\right).
+\label{eq:psnr}
+\end{equation}
+Nếu hai ảnh giống hệt nhau, MSE bằng 0 và PSNR được ghi nhận là \infpsnr. Thông thường, các độ đo này cần được đọc cùng nhau để có được các thông tin hữu ích. Ví dụ, MAE thấp và PSNR cao cho thấy kết quả của cách thủ
+công rất gần với OpenCV. MAE bằng 0 và PSNR vô hạn nghĩa là hai kết quả khớp nhau hoàn toàn.
+
+Ngoài ra, với thuật toán Canny, do đầu ra là bản đồ biên cạnh nhị phân, nhóm bổ sung độ đo \textbf{tỷ lệ pixel cùng nhãn biên cạnh} như sau:
+\begin{equation}
+\operatorname{Agreement}(A,B)=
+\frac{100}{N}\sum_{i=1}^{N}\mathbf{1}\left[(A_i>0)=(B_i>0)\right].
+\label{eq:edge-agreement}
+\end{equation},
+với $N$ là số lượng điểm ảnh.
+Độ đo này cho biết tỷ lệ điểm ảnh được hai phương pháp gán cùng nhãn biên cạnh hoặc không phải biên cạnh.
+
+% =====================================================================
+\section{Kết quả}
+% =====================================================================
+
+\subsection{Làm trơn ảnh}
+
+Nhóm làm trơn được đánh giá trên ảnh màu. Các kết quả trong
+Hình~\ref{fig:smoothing} cho thấy mức làm mờ và khả năng giữ cấu trúc ảnh của
+từng loại bộ lọc. Các số liệu tương ứng được trình bày trong
+Bảng~\ref{tab:smoothing-results}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/01_smoothing.png}
+\caption{Kết quả làm trơn ảnh bằng các bộ lọc mean, median, Gaussian và bilateral.}
+\label{fig:smoothing}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Kết quả định lượng của các phép làm trơn ảnh}
+\label{tab:smoothing-results}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lrrrrrr}
+\toprule
+\multirow{2}{*}{\textbf{Thuật toán}}
+ & \multicolumn{2}{c}{\textbf{Thời gian (ms)}}
+ & \multicolumn{2}{c}{\textbf{Bộ nhớ (KiB)}}
+ & \multirow{2}{*}{\textbf{MAE}}
+ & \multirow{2}{*}{\shortstack{\textbf{PSNR}\\\textbf{(dB)}}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+ & NumPy & OpenCV & NumPy & OpenCV & & \\
+\midrule
+Mean $11\times11$                 & 107.41  & 3.25  & 65734.2  & 2040.1 & 0.000 & $\infty$ \\
+Median $11\times11$               & 1800.28 & 41.62 & 512174.7 & 2040.1 & 0.000 & $\infty$ \\
+Gaussian $11\times11,\sigma=2$    & 100.31  & 5.82  & 65733.3  & 2040.1 & 0.010 & 68.12 \\
+Bilateral $d=11$                  & 1409.32 & 4.37  & 130964.3 & 2040.1 & 1.179 & 40.83 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Nhận xét về kết quả của các thuật toán như sau:
+\begin{itemize}
+  \item \textbf{Mean filter}: Đơn giản và khớp hoàn toàn với OpenCV, nhưng làm mờ ảnh đáng kể vì mọi điểm ảnh trong cửa sổ lân cận có cùng trọng số.
+  \item \textbf{Median filter}: Giữ cấu trúc tốt hơn với nhiễu ngoại lai do chọn trung vị, nhưng chi phí tính toán tăng mạnh với kernel lớn.
+  \item \textbf{Gaussian filter}: cho kết quả mượt hơn mean filter nhờ trọng số tập trung quanh tâm kernel; sai khác nhỏ với OpenCV chủ yếu đến từ làm tròn số thực.
+  \item \textbf{Bilateral filter}: bảo toàn biên cạnh tốt hơn nhờ kết hợp khoảng cách không gian và khác biệt cường độ, nhưng chậm và khó trùng khớp kết quả với OpenCV do đây là phép lọc phi tuyến.
+\end{itemize}
+
+\subsection{Phát hiện biên cạnh}
+
+Nhóm phát hiện biên cạnh được đánh giá trên ảnh xám chuyển đổi từ ảnh RGB. Các
+thuật toán được chia thành ba nhóm hình: đạo hàm bậc nhất, đạo hàm bậc hai và
+Canny. Hình~\ref{fig:gradients}, Hình~\ref{fig:second-order} và
+Hình~\ref{fig:canny} lần lượt trình bày ba nhóm kết quả này. Các số liệu định
+lượng tương ứng được trình bày trong Bảng~\ref{tab:edge-results}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/02_edge_gradients.png}
+\caption{Kết quả phát hiện biên cạnh bằng các thuật toán dựa trên gradient bậc nhất: Roberts, Prewitt, Sobel, Scharr}
+\label{fig:gradients}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{figures/03_edge_second_order.png}
+\caption{Kết quả phát hiện biên cạnh bằng các thuật toán dựa trên gradient bậc hai: Laplacian, LoG và DoG}
+\label{fig:second-order}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/04_edge_canny.png}
+\caption{Kết quả Canny với hai bộ ngưỡng}
+\label{fig:canny}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Kết quả định lượng của các thuật toán phát hiện biên cạnh}
+\label{tab:edge-results}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lrrrrrrr}
+\toprule
+\multirow{2}{*}{\textbf{Thuật toán}}
+& \multicolumn{2}{c}{\textbf{Thời gian (ms)}}
+& \multicolumn{2}{c}{\textbf{Bộ nhớ (KiB)}}
+& \multirow{2}{*}{\textbf{MAE}}
+& \multirow{2}{*}{\shortstack{\textbf{PSNR}\\\textbf{(dB)}}}
+& \multirow{2}{*}{\shortstack{\textbf{Tỷ lệ pixel}\\\textbf{trùng nhãn (\%)}}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+& NumPy & OpenCV & NumPy & OpenCV & & & \\
+\midrule
+Roberts                         & 6.70   & 6.04 & 27279.6 & 27200.5 & 0.000 & $\infty$ & -- \\
+Prewitt                         & 11.34  & 4.29 & 27293.0 & 27200.5 & 0.000 & $\infty$ & -- \\
+Sobel                           & 9.89   & 3.96 & 27293.0 & 27201.0 & 0.000 & $\infty$ & -- \\
+Scharr                          & 11.03  & 3.39 & 27293.0 & 27201.0 & 0.000 & $\infty$ & -- \\
+\midrule
+Laplacian response              & 5.90   & 2.79 & 27201.2 & 27201.0 & 0.000 & $\infty$ & -- \\
+LoG response $11\times11,\sigma=2$ & 64.65 & 5.44 & 27293.0 & 27201.0 & 0.000 & $\infty$ & -- \\
+DoG response                    & 32.01  & 4.89 & 27320.1 & 27201.0 & 0.000 & $\infty$ & -- \\
+\midrule
+Canny $30/90$                   & 117.44 & 3.15 & 42256.2 & 1360.2  & 1.418 & 22.55 & 99.44 \\
+Canny $80/160$                  & 131.66 & 0.86 & 42255.3 & 1360.2  & 0.279 & 29.60 & 99.89 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Nhận xét về kết quả của các thuật toán như sau:
+\begin{itemize}
+  \item \textbf{Roberts}: Dùng kernel nhỏ theo đường chéo nên thiếu ổn định với cạnh ngang/dọc.
+  \item \textbf{Prewitt, Sobel và Scharr}: Biểu diễn cạnh ngang/dọc tốt hơn Roberts. Sobel và Scharr cho ra biên cạnh rõ hơn nhưng nhạy cảm với nhiễu, chúng giữ lại nhiều chi tiết nhỏ không phải biên cạnh quan trọng.
+  \item \textbf{Laplacian}: Làm nổi bật biên cạnh theo nhiều hướng, nhưng đạo hàm bậc hai cũng khuếch đại nhiễu.
+  \item \textbf{LoG và DoG}: Giảm nhiễu tốt hơn Laplacian nhờ bước làm trơn Gaussian hoặc hiệu hai ảnh Gaussian. Tuy nhiên đây là ảnh đáp ứng, chưa qua bước dò giao-zero hay ngưỡng hoá nên biên trông còn mờ --- khác với Canny vốn xuất ra bản đồ biên nhị phân rõ ràng.
+  \item \textbf{Canny}: Tạo bản đồ biên cạnh nhị phân mảnh và rõ hơn nhờ NMS, double threshold và hysteresis. Việc điều chỉnh siêu tham số sẽ ảnh hưởng khá lớn đến kết quả nhận được.
+\end{itemize}
+
+% =====================================================================
+\section{Thảo luận}
+% =====================================================================
+
+\runin{Chất lượng ảnh đầu ra so với OpenCV:}
+\begin{itemize}
+  \item Các phép làm trơn ảnh bằng bộ lọc mean, median và các thuật toán phát hiện biên cạnh Roberts, Prewitt, Sobel, Scharr, Laplacian, LoG và DoG mà nhóm cài đặt cho kết quả khớp hoàn toàn với OpenCV.
+ \item Làm trơn bằng bộ lọc Gaussian có sai khác rất nhỏ do sai số trong việc làm tròn số thực. Bilateral có MAE cao hơn vì đây là phép lọc phi tuyến và OpenCV có các tối ưu nội bộ trong quá trình tính trọng số.
+ \item Thuật toán Canny cũng khác biệt ở các độ đo, xuất phát từ các bước non-maximum suppression, double threshold và hysteresis. Trong cài đặt thủ công, bước NMS làm tròn hướng gradient về các hướng chính, trong khi OpenCV nội suy độ lớn gradient dọc đúng hướng gradient (thay vì làm tròn về 4 hướng), nên kết quả mảnh và chính xác hơn ở các biên xiên. Tuy nhiên, theo độ đo tỷ lệ pixel cùng nhãn biên cạnh đạt 99.44\% với ngưỡng $30/90$ và 99.89\% với ngưỡng $80/160$, cách cài đặt của nhóm đạt được độ chính xác rất tốt.
+\end{itemize}
+
+\runin{Thời gian chạy và bộ nhớ:} Tương quan là toán tử được gọi nhiều lần trong
+các phép làm trơn và xác định biên cạnh, do đó tốc độ của toán tử
+này ảnh hưởng trực tiếp đến toàn bộ các kết quả. Thư viện OpenCV nhanh hơn rõ rệt vì các hàm
+lõi được cài đặt bằng C/C++, tối ưu truy cập bộ nhớ và có thể khai thác song
+song ở mức CPU. Cài đặt NumPy của nhóm ưu tiên tính minh bạch của thuật toán, do
+đó tạo nhiều mảng trung gian, đặc biệt ở median, bilateral và Canny. Đây cũng là
+lý do trong học sâu, các phép tương quan/convolution thường được triển khai bằng
+kernel tối ưu trên GPU thay vì dùng vòng lặp Python trực tiếp.
+
+% =====================================================================
+\section{Kết luận}
+% =====================================================================
+
+Bài thực hành cho thấy nhiều phép làm trơn ảnh và phát hiện biên cạnh có thể
+được xây dựng từ cùng một nền tảng là kernel và toán tử tương quan. Khi kernel,
+padding và cách chuẩn hóa được thiết lập giống OpenCV, các phép lọc tuyến tính
+cho kết quả khớp gần như tuyệt đối. Sai khác chủ yếu xuất hiện ở các phép lọc
+phi tuyến hoặc các thuật toán gồm nhiều bước quyết định như bilateral và Canny.
+
+Về mặt hiệu năng, OpenCV vượt trội so với cách cài đặt ở các thuật toán và sự khác biệt này chủ yếu đến từ toán tử tương quan. Bằng song song hoá, chỉ thị SIMD và tối ưu truy cập bộ nhớ (cache), OpenCV cùng các thư viện tương tự đã tối ưu toán tử này rất triệt để. Tuy nhiên, cài đặt thủ công bằng NumPy thể hiện được tường minh vai trò của từng thành phần của toán tử tương quan và các thuật toán liên quan.
+
+% =====================================================================
+\section{Tự đánh giá và bảng phân công công việc}
+% =====================================================================
+
+Bảng~\ref{tab:completion} tóm tắt mức độ hoàn thành các yêu cầu chính của bài
+thực hành. Nhóm đã \textbf{hoàn thành đầy đủ} các phần cài đặt thủ công bằng NumPy, phần đối chiếu với OpenCV, phần sinh hình minh họa và phần đánh giá định lượng bằng
+thời gian, bộ nhớ, MAE, PSNR và tỷ lệ pixel cùng nhãn đối với Canny.
+Bảng~\ref{tab:members} trình bày phân công công việc theo thành viên trong nhóm.
+
+
+\begin{table}[H]
+\centering
+\caption{Tự đánh giá mức độ hoàn thành các yêu cầu.}
+\label{tab:completion}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{c p{8.2cm} c c}
+\toprule
+\textbf{STT} & \textbf{Yêu cầu} & \textbf{NumPy thủ công} & \textbf{OpenCV (Thư viện)} \\
+\midrule
+1 & Cài đặt toán tử tương quan 2D & \checkmark\,(100\%) & \checkmark\,(100\%) \\
+2 & Cài đặt các bộ lọc làm trơn tuyến tính: mean và Gaussian & \checkmark\,(100\%) & \checkmark\,(100\%) \\
+3 & Cài đặt các bộ lọc làm trơn phi tuyến: median và bilateral & \checkmark\,(100\%) & \checkmark\,(100\%) \\
+4 & Cài đặt thuật toán phát hiện biên cạnh dựa vào toán tử gradient: Roberts, Prewitt, Sobel và Scharr & \checkmark\,(100\%) & \checkmark\,(100\%) \\
+5 & Cài đặt thuật toán phát hiện biên cạnh dựa vào toán tử laplacian: Laplacian, LoG và DoG & \checkmark\,(100\%) & \checkmark\,(100\%) \\
+6 & Cài đặt thuật toán Canny & \checkmark\,(100\%) & \checkmark\,(100\%) \\
+7 & So sánh định lượng bằng thời gian, bộ nhớ, MAE, PSNR và tỷ lệ pixel cùng nhãn & \multicolumn{2}{c}{\checkmark\,(100\%)} \\
+8 & Tạo hình ảnh kết quả, bảng CSV benchmark và nội dung báo cáo & \multicolumn{2}{c}{\checkmark\,(100\%)} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Phân công công việc và tỷ lệ đóng góp của thành viên.}
+\label{tab:members}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{c l c p{7.2cm} c}
+\toprule
+\textbf{STT} & \textbf{Họ và tên} & \textbf{Mã học viên} & \textbf{Công việc chính} & \textbf{Đóng góp} \\
+\midrule
+1 & Lưu Thị Yến Nhi & 25C11014 &
+  Cài đặt toán tử tương quan và thuật toán làm trơn ảnh; Hỗ trợ kiểm tra kết quả so sánh; Viết báo cáo. & 50\% \\
+2 & Hoàng Trọng Vũ & 25C15028 &
+  Cài đặt thuật toán phát hiện biên cạnh; So sánh với OpenCV; Viết báo cáo & 50\% \\
+\midrule
+\multicolumn{4}{r}{\textbf{Tổng cộng}} & \textbf{100\%} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

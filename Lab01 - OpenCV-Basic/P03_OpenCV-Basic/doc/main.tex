@@ -1,0 +1,613 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{vietnam}
+
+\usepackage{lmodern}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+
+\usepackage{amsmath, amsthm, amssymb, latexsym, amscd, amsfonts, enumerate}
+\usepackage{mathtools}
+\usepackage[all,cmtip]{xy}
+\usepackage{color, fancyhdr, graphicx, wrapfig}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{xparse}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% =========================
+% Table
+% =========================
+\usepackage{tabularx}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{multirow}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% =========================
+% New math symbols
+% =========================
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\newcommand{\runin}[1]{\par\medskip\noindent\textbf{#1}\hspace{0.4em}\ignorespaces}
+
+% =========================
+% Vị trí figure
+% =========================
+\usepackage{float}
+\usepackage{placeins}
+
+% =========================
+% Listings
+% =========================
+\usepackage{listings}
+\lstdefinestyle{myverbatim}{
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{white},
+    breaklines=true,
+    breakatwhitespace=true
+}
+
+% =========================
+% Canh lề
+% =========================
+\usepackage[
+    top=20mm,
+    bottom=10mm,
+    left=30mm,
+    right=20mm,
+    footskip=15mm,
+    includefoot
+]{geometry}
+
+\usepackage{chngcntr}
+
+% =========================
+% Cỡ chữ section, subsection, subsubsection
+% =========================
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\fontsize{15pt}{18pt}\bfseries}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\fontsize{13pt}{16pt}\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\fontsize{12pt}{15pt}\bfseries}
+  {\thesubsubsection}{1em}{}
+
+\usepackage{setspace}
+
+\usepackage{enumitem}
+\setlist{nosep}
+
+\usepackage{indentfirst}
+\setlength{\parindent}{0pt}
+
+% =========================
+% Trang bìa
+% =========================
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\newcommand\HRule{\rule{\textwidth}{1pt}}
+
+% =========================
+% Header và Footer
+% =========================
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Bài tập Thực hành 3}
+\rhead{Thị giác máy tính nâng cao}
+\cfoot{\thepage}
+
+\setlength{\headheight}{15pt}
+
+\renewcommand{\headrulewidth}{1.2pt}
+\renewcommand{\footrulewidth}{1.2pt}
+
+\numberwithin{equation}{section}
+
+% ============================================================
+% BẮT ĐẦU DOCUMENT
+% ============================================================
+\begin{document}
+
+\fontsize{12pt}{15pt}\selectfont
+\setlength{\parskip}{4pt}
+
+% Trang bìa
+\hypersetup{pageanchor=false}
+\input{cover}
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+
+% Mục lục
+\tableofcontents
+\newpage
+
+% =====================================================================
+\section{Giới thiệu}
+% =====================================================================
+
+Mục tiêu của bài thực hành là tìm hiểu bài toán \textbf{phát hiện đối tượng} (object detection) và thực nghiệm với ba họ kiến trúc tiêu biểu, đại diện cho ba hướng tiếp cận khác nhau trong lịch sử phát triển của lĩnh vực này:
+\begin{itemize}
+  \item \textbf{YOLOv4} --- bộ phát hiện \textit{một giai đoạn} (one-stage), dựa trên anchor, dự đoán trực tiếp trên lưới đặc trưng.
+  \item \textbf{Faster R-CNN} --- bộ phát hiện \textit{hai giai đoạn} (two-stage), dựa trên đề xuất vùng (region proposal).
+  \item \textbf{DETR} --- bộ phát hiện dựa trên \textit{Transformer}, mô hình hóa bài toán như dự đoán tập hợp trực tiếp (direct set prediction), loại bỏ hoàn toàn anchor và NMS.
+\end{itemize}
+
+Cả ba mô hình được huấn luyện (fine-tune từ trọng số tiền huấn luyện trên COCO) và đánh giá trên cùng một tập dữ liệu \textbf{Chess Pieces} (Roboflow, 12 lớp quân cờ vua), với \textbf{cùng một giao thức độ đo COCO} để kết quả so sánh được trực tiếp và công bằng.
+
+Báo cáo tập trung vào các nội dung chính sau:
+\begin{itemize}
+  \item Tổng quan bài toán phát hiện đối tượng và các nhóm phương pháp.
+  \item Kiến trúc của ba mô hình YOLOv4, Faster R-CNN và DETR.
+  \item Các hàm mất mát đặc trưng của từng mô hình (CIoU, smooth L1, Hungarian loss).
+  \item Các độ đo đánh giá và phân tích lý do lựa chọn độ đo để so sánh.
+  \item Thiết lập thí nghiệm, kết quả định lượng/định tính và thảo luận.
+\end{itemize}
+
+% =====================================================================
+\section{Tổng quan bài toán phát hiện đối tượng}
+% =====================================================================
+
+Khác với bài toán phân loại ảnh (chỉ trả lời \textit{ảnh chứa đối tượng gì}), phát hiện đối tượng phải đồng thời giải quyết hai bài toán con cho \textbf{mỗi} đối tượng trong ảnh:
+\begin{itemize}
+  \item \textbf{Định vị} (localization): xác định vị trí đối tượng bằng một hộp giới hạn (bounding box) $b = (x, y, w, h)$.
+  \item \textbf{Phân loại} (classification): gán nhãn lớp $c$ cho đối tượng trong hộp đó.
+\end{itemize}
+
+Một ảnh có thể chứa số lượng đối tượng tùy ý và không biết trước, nên đầu ra của mô hình là một \textit{tập hợp} có kích thước thay đổi. Đây là điểm khiến bài toán khó hơn phân loại và là nguyên nhân dẫn đến nhiều cách thiết kế kiến trúc khác nhau. Có thể chia các phương pháp hiện đại thành ba nhóm chính:
+
+\runin{Phương pháp hai giai đoạn (two-stage).} Tiêu biểu là họ R-CNN (R-CNN, Fast R-CNN, Faster R-CNN~\cite{fasterrcnn}). Giai đoạn một sinh ra một tập \textit{đề xuất vùng} có khả năng chứa đối tượng; giai đoạn hai phân loại và tinh chỉnh hộp cho từng đề xuất. Nhóm này thường cho độ chính xác cao, đặc biệt với đối tượng nhỏ, nhưng tốc độ chậm hơn.
+
+\runin{Phương pháp một giai đoạn (one-stage).} Tiêu biểu là họ YOLO~\cite{yolov1,yolov4}, SSD và RetinaNet. Các mô hình này bỏ qua bước đề xuất vùng, dự đoán trực tiếp lớp và hộp trên một lưới đặc trưng dày đặc trong một lần lan truyền. Nhờ đó tốc độ rất nhanh, phù hợp ứng dụng thời gian thực, đánh đổi lại độ chính xác đôi khi thấp hơn nhóm hai giai đoạn.
+
+\runin{Phương pháp dựa trên Transformer.} Tiêu biểu là DETR~\cite{detr}. Mô hình xem phát hiện đối tượng như bài toán dự đoán tập hợp trực tiếp, dùng cơ chế tự chú ý (self-attention)~\cite{transformer} để học ngữ cảnh toàn cục và so khớp song ánh (bipartite matching) để gán dự đoán với nhãn thực, qua đó loại bỏ các thành phần thiết kế thủ công.
+
+Hai thành phần thiết kế thủ công quan trọng mà các phương pháp truyền thống phụ thuộc vào là:
+\begin{itemize}
+  \item \textbf{Anchor box}: các hộp tham chiếu có kích thước/tỷ lệ định sẵn, đặt dày đặc trên ảnh; mô hình học cách \textit{tinh chỉnh} anchor thay vì dự đoán hộp từ đầu.
+  \item \textbf{Non-Maximum Suppression (NMS)}: bước hậu xử lý loại bỏ các hộp trùng lặp cùng dự đoán một đối tượng, chỉ giữ hộp có độ tin cậy cao nhất.
+\end{itemize}
+Một trong những đóng góp nổi bật của DETR là loại bỏ được cả anchor lẫn NMS, điều mà phần~\ref{sec:detr} sẽ trình bày chi tiết.
+
+% =====================================================================
+\section{Các kiến trúc mô hình}
+% =====================================================================
+
+Cả ba mô hình đều theo khuôn chung \textit{backbone $\rightarrow$ neck/encoder $\rightarrow$ head}, nhưng khác nhau căn bản ở cách sinh và so khớp dự đoán.
+
+\subsection{YOLOv4 (one-stage)}
+
+YOLOv4~\cite{yolov4} gồm ba phần: \textbf{backbone} CSPDarknet-53 trích xuất đặc trưng; \textbf{neck} gồm SPP và PANet để tổng hợp đặc trưng đa tỷ lệ; và \textbf{head} dự đoán dày đặc trên các lưới có độ phân giải khác nhau.
+
+Ảnh đầu vào được chia thành lưới $S\times S$ ô. Mỗi ô dự đoán $B$ hộp dựa trên anchor, mỗi hộp gồm $(t_x, t_y, t_w, t_h)$ để tinh chỉnh anchor, một điểm \textit{objectness} (xác suất ô chứa đối tượng) và phân bố xác suất trên $C$ lớp. Như vậy tensor đầu ra tại mỗi tỷ lệ có dạng:
+\begin{equation}
+S \times S \times \big(B \times (5 + C)\big),
+\label{eq:yolo-output}
+\end{equation}
+trong đó số $5$ tương ứng với $4$ tham số hộp và $1$ điểm objectness. Trong bài thực hành, nhóm chúng em sử dụng biến thể \textbf{YOLOv4-CSP-X (Mish)} và viết lại file cấu hình darknet cho $C = 12$ lớp. Sau khi dự đoán, YOLOv4 vẫn cần bước NMS để loại các hộp trùng lặp.
+
+\subsection{Faster R-CNN (two-stage)}
+
+Faster R-CNN~\cite{fasterrcnn} dùng \textbf{backbone} ResNet-50~\cite{resnet} kết hợp \textbf{FPN}~\cite{fpn} để tạo đặc trưng đa tỷ lệ. Điểm cốt lõi gồm hai giai đoạn:
+\begin{enumerate}
+  \item \textbf{Region Proposal Network (RPN)}: một mạng tích chập nhỏ trượt trên bản đồ đặc trưng, tại mỗi vị trí dự đoán điểm \textit{objectness} và tinh chỉnh anchor để sinh ra một tập đề xuất vùng có khả năng chứa đối tượng.
+  \item \textbf{Detection head (ROI head)}: với mỗi đề xuất, lớp \textbf{ROI Align} trích đặc trưng có kích thước cố định, sau đó hai nhánh đầy đủ kết nối thực hiện phân loại lớp và hồi quy tinh chỉnh hộp.
+\end{enumerate}
+Nhờ cơ chế đề xuất vùng và FPN, Faster R-CNN thường có khả năng phát hiện đối tượng nhỏ tốt. Trong bài thực hành, nhóm sử dụng \texttt{fasterrcnn\_resnet50\_fpn} của torchvision~\cite{torchvision}, thay đầu phân loại để phù hợp với $12 + 1$ lớp (cộng thêm lớp nền/background).
+
+\subsection{DETR (Transformer, set prediction)}
+\label{sec:detr}
+
+DETR~\cite{detr} gồm ba thành phần (Hình minh họa kiến trúc trong tài liệu gốc):
+\begin{itemize}
+  \item \textbf{CNN backbone} (ResNet-50): trích xuất bản đồ đặc trưng độ phân giải thấp từ ảnh đầu vào.
+  \item \textbf{Transformer Encoder--Decoder}: Encoder dùng self-attention học ngữ cảnh toàn cục trên toàn bộ đặc trưng ảnh; Decoder nhận một số lượng \textbf{cố định} $N$ vector học được gọi là \textit{object queries}, truy vấn thông tin từ Encoder để xác định đối tượng.
+  \item \textbf{Đầu dự đoán (FFN)}: một MLP đơn giản cho mỗi object query, xuất trực tiếp nhãn lớp và tọa độ hộp.
+\end{itemize}
+
+DETR luôn trả về \textbf{đúng $N$ dự đoán} (mặc định $N = 100$) bất kể số đối tượng thực tế. Nếu ảnh chỉ có $k$ đối tượng thì $N - k$ dự đoán còn lại được gán nhãn đặc biệt \textit{no object} ($\varnothing$, nền). Việc dự đoán một tập cố định, kết hợp so khớp song ánh khi huấn luyện (phần~\ref{sec:detr-loss}), giúp DETR không cần anchor và \textbf{không cần NMS}: các dự đoán trùng lặp bị phạt nặng trong quá trình học. Nhóm sử dụng checkpoint \texttt{facebook/detr-resnet-50} của Hugging Face~\cite{huggingface}, thay đầu phân loại cho $12$ lớp.
+
+% =====================================================================
+\section{Hàm mất mát}
+% =====================================================================
+
+Hàm mất mát là điểm khác biệt cốt lõi giữa ba mô hình. Tất cả đều gồm hai thành phần: \textit{phân loại} và \textit{định vị hộp}, nhưng cách \textbf{gán} dự đoán với nhãn thực (label assignment) lại rất khác nhau.
+
+\subsection{Độ đo IoU và các biến thể dùng trong hàm mất mát}
+
+\textbf{Intersection over Union (IoU)} đo mức chồng lấp giữa hộp dự đoán $B$ và hộp thực $B^{gt}$:
+\begin{equation}
+\operatorname{IoU}(B, B^{gt}) = \frac{|B \cap B^{gt}|}{|B \cup B^{gt}|}.
+\label{eq:iou}
+\end{equation}
+IoU nằm trong $[0, 1]$ và bất biến với tỷ lệ, nhưng có nhược điểm là \textit{bằng 0} khi hai hộp không giao nhau, khiến gradient biến mất. Các biến thể sau khắc phục điều này và thường được dùng trực tiếp làm thành phần định vị trong hàm mất mát:
+
+\runin{GIoU} (Generalized IoU)~\cite{giou} bổ sung hộp bao nhỏ nhất $C$ chứa cả $B$ và $B^{gt}$:
+\begin{equation}
+\operatorname{GIoU} = \operatorname{IoU} - \frac{|C \setminus (B \cup B^{gt})|}{|C|}.
+\label{eq:giou}
+\end{equation}
+
+\runin{CIoU} (Complete IoU)~\cite{ciou} bổ sung thêm khoảng cách tâm và độ tương đồng tỷ lệ khung hình:
+\begin{equation}
+\mathcal{L}_{\text{CIoU}} = 1 - \operatorname{IoU} + \frac{\rho^2(b, b^{gt})}{c^2} + \alpha v,
+\label{eq:ciou}
+\end{equation}
+trong đó $\rho(\cdot)$ là khoảng cách Euclid giữa hai tâm hộp, $c$ là đường chéo của hộp bao nhỏ nhất, còn $v$ đo sự khác biệt tỷ lệ khung hình và $\alpha$ là hệ số cân bằng:
+\begin{equation}
+v = \frac{4}{\pi^2}\left(\arctan\frac{w^{gt}}{h^{gt}} - \arctan\frac{w}{h}\right)^2, \qquad
+\alpha = \frac{v}{(1 - \operatorname{IoU}) + v}.
+\label{eq:ciou-v}
+\end{equation}
+Trong bài thực hành, YOLOv4 được huấn luyện với hàm mất mát định vị dạng CIoU.
+
+\subsection{Hàm mất mát của YOLOv4}
+
+Tổng mất mát của YOLO là tổng có trọng số của ba thành phần, lấy tổng trên các ô và anchor \textit{chịu trách nhiệm} cho một đối tượng (positive):
+\begin{equation}
+\mathcal{L}_{\text{YOLO}} = \lambda_{\text{box}}\,\mathcal{L}_{\text{CIoU}}
+ + \lambda_{\text{obj}}\,\mathcal{L}_{\text{obj}}
+ + \lambda_{\text{cls}}\,\mathcal{L}_{\text{cls}},
+\label{eq:yolo-loss}
+\end{equation}
+trong đó $\mathcal{L}_{\text{box}}$ là CIoU~\eqref{eq:ciou} cho các hộp positive; $\mathcal{L}_{\text{obj}}$ là binary cross-entropy của điểm objectness trên \textit{mọi} ô (cả positive lẫn negative); và $\mathcal{L}_{\text{cls}}$ là cross-entropy/BCE cho phân loại tại các ô positive. Việc gán nhãn ở YOLO dựa trên anchor: anchor có IoU lớn nhất với hộp thực được xem là chịu trách nhiệm cho đối tượng đó.
+
+\subsection{Hàm mất mát của Faster R-CNN}
+
+Faster R-CNN có hàm mất mát đa nhiệm cho \textbf{cả hai} giai đoạn. Với mỗi anchor/đề xuất $i$, gọi $p_i$ là xác suất dự đoán có đối tượng, $p_i^*$ là nhãn thực ($1$ nếu positive), $t_i$ và $t_i^*$ là vector tham số hóa hộp dự đoán và hộp thực:
+\begin{equation}
+\mathcal{L}(\{p_i\}, \{t_i\}) =
+\frac{1}{N_{\text{cls}}}\sum_i \mathcal{L}_{\text{cls}}(p_i, p_i^*)
++ \lambda \frac{1}{N_{\text{reg}}}\sum_i p_i^*\, \mathcal{L}_{\text{reg}}(t_i, t_i^*).
+\label{eq:frcnn-loss}
+\end{equation}
+Thành phần phân loại $\mathcal{L}_{\text{cls}}$ là cross-entropy; thành phần hồi quy hộp $\mathcal{L}_{\text{reg}}$ chỉ tính cho các đề xuất positive ($p_i^* = 1$) và sử dụng hàm \textbf{smooth L1}:
+\begin{equation}
+\operatorname{smooth}_{L_1}(x) =
+\begin{cases}
+0.5\,x^2 & \text{nếu } |x| < 1,\\
+|x| - 0.5 & \text{ngược lại}.
+\end{cases}
+\label{eq:smoothl1}
+\end{equation}
+Smooth L1 hành xử như L2 khi sai số nhỏ (gradient ổn định) và như L1 khi sai số lớn (giảm ảnh hưởng của điểm ngoại lai). Hàm mất mát~\eqref{eq:frcnn-loss} được áp dụng cho cả RPN (objectness + tinh chỉnh anchor) và ROI head (phân loại $C+1$ lớp + tinh chỉnh hộp).
+
+\subsection{Hàm mất mát của DETR: so khớp song ánh và Hungarian loss}
+\label{sec:detr-loss}
+
+Vì DETR xuất một tập $N$ dự đoán không có thứ tự, cần một cách gán \textit{một--đối--một} giữa dự đoán và nhãn thực trước khi tính mất mát. DETR dùng \textbf{thuật toán Hungarian}~\cite{hungarian} để tìm hoán vị $\hat\sigma$ tối ưu giữa $N$ dự đoán $\hat y$ và tập nhãn thực $y$ (được đệm thêm $\varnothing$ cho đủ $N$ phần tử):
+\begin{equation}
+\hat\sigma = \argmin_{\sigma \in \mathfrak{S}_N}
+\sum_{i=1}^{N} \mathcal{L}_{\text{match}}\big(y_i, \hat y_{\sigma(i)}\big),
+\label{eq:detr-match}
+\end{equation}
+với chi phí so khớp tính đến cả độ tin cậy lớp và độ khớp hộp:
+\begin{equation}
+\mathcal{L}_{\text{match}}(y_i, \hat y_{\sigma(i)}) =
+-\mathbf{1}_{\{c_i \neq \varnothing\}}\,\hat p_{\sigma(i)}(c_i)
++ \mathbf{1}_{\{c_i \neq \varnothing\}}\,\mathcal{L}_{\text{box}}\big(b_i, \hat b_{\sigma(i)}\big).
+\label{eq:detr-matchcost}
+\end{equation}
+Sau khi có $\hat\sigma$, mô hình được huấn luyện bằng \textbf{Hungarian loss}:
+\begin{equation}
+\mathcal{L}_{\text{Hungarian}}(y, \hat y) =
+\sum_{i=1}^{N}\left[
+-\log \hat p_{\hat\sigma(i)}(c_i)
++ \mathbf{1}_{\{c_i \neq \varnothing\}}\,\mathcal{L}_{\text{box}}\big(b_i, \hat b_{\hat\sigma(i)}\big)
+\right],
+\label{eq:detr-hungarian}
+\end{equation}
+trong đó thành phần định vị hộp kết hợp khoảng cách L1 và GIoU:
+\begin{equation}
+\mathcal{L}_{\text{box}}(b, \hat b) =
+\lambda_{\text{L1}}\,\|b - \hat b\|_1
++ \lambda_{\text{iou}}\,\mathcal{L}_{\text{GIoU}}(b, \hat b).
+\label{eq:detr-box}
+\end{equation}
+Chính cơ chế so khớp một--đối--một này khiến mỗi đối tượng thực chỉ được gán cho \textbf{đúng một} dự đoán; các dự đoán trùng lặp lên cùng một đối tượng sẽ bị phạt, nhờ đó DETR không cần đến NMS.
+
+% =====================================================================
+\section{Độ đo đánh giá}
+% =====================================================================
+
+Để so sánh ba mô hình có kiểu đầu ra rất khác nhau một cách \textbf{công bằng}, nhóm chúng em sử dụng bộ \textbf{độ đo COCO}~\cite{coco} làm thước đo chính, được tính bằng cùng một thư viện \texttt{pycocotools} cho cả ba mô hình.
+
+\subsection{IoU, Precision và Recall}
+
+Một dự đoán được xem là đúng (\textit{true positive}, TP) nếu nó khớp lớp và có IoU với một hộp thực vượt một ngưỡng cho trước; ngược lại là \textit{false positive} (FP). Hộp thực không được phát hiện là \textit{false negative} (FN). Từ đó:
+\begin{equation}
+\operatorname{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}, \qquad
+\operatorname{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}.
+\label{eq:precision-recall}
+\end{equation}
+Precision đo độ \textit{chính xác} của các dự đoán, Recall đo độ \textit{bao phủ} các đối tượng thực. Hai đại lượng này đánh đổi lẫn nhau khi thay đổi ngưỡng độ tin cậy, tạo thành đường cong Precision--Recall (PR).
+
+\subsection{Average Precision (AP) và mean Average Precision (mAP)}
+
+\textbf{Average Precision (AP)} của một lớp là diện tích dưới đường cong PR của lớp đó:
+\begin{equation}
+\operatorname{AP} = \int_0^1 p(r)\, dr,
+\label{eq:ap}
+\end{equation}
+trong đó $p(r)$ là precision tại mức recall $r$. Trên thực tế, COCO xấp xỉ tích phân này bằng cách lấy trung bình precision (đã làm trơn) tại $101$ mức recall $\{0, 0.01, \dots, 1.0\}$. \textbf{mAP} (mean AP) là trung bình AP trên toàn bộ các lớp:
+\begin{equation}
+\operatorname{mAP} = \frac{1}{C}\sum_{k=1}^{C}\operatorname{AP}_k.
+\label{eq:map}
+\end{equation}
+
+\subsection{Bộ độ đo COCO}
+
+Điểm đặc trưng của COCO là lấy trung bình mAP trên \textbf{10 ngưỡng IoU} từ $0.50$ đến $0.95$ (bước $0.05$), thay vì chỉ một ngưỡng. Bộ độ đo gồm:
+\begin{itemize}
+  \item $\text{mAP}@[0.50{:}0.95]$ --- con số đầu bảng, nghiêm ngặt nhất về định vị.
+  \item $\text{mAP}@0.50$ (kiểu PASCAL VOC, dễ) và $\text{mAP}@0.75$ (chặt).
+  \item AP theo kích thước đối tượng: \textit{small} ($\text{area} < 32^2$), \textit{medium} ($32^2 \le \text{area} < 96^2$), \textit{large} ($\ge 96^2$). Quân cờ chủ yếu thuộc nhóm nhỏ/vừa.
+  \item \textbf{Average Recall (AR)} ứng với số lượng phát hiện tối đa $\{1, 10, 100\}$ mỗi ảnh.
+\end{itemize}
+Việc lấy trung bình trên nhiều ngưỡng IoU và toàn dải recall khiến mAP của COCO trở thành thước đo \textbf{độc lập với kiểu đầu ra} của mô hình --- đây là lý do nhóm chọn nó để so sánh ba kiến trúc.
+
+\subsection{Độ đo hiệu năng}
+
+Bên cạnh độ chính xác, nhóm báo cáo thêm hai chỉ số phản ánh chi phí của mô hình để thấy rõ sự \textbf{đánh đổi}:
+\begin{itemize}
+  \item \textbf{Số tham số} (triệu tham số, M): phản ánh dung lượng/độ phức tạp mô hình.
+  \item \textbf{Tốc độ suy luận} (FPS --- frames per second): số ảnh xử lý được mỗi giây khi suy luận.
+\end{itemize}
+Bảng~\ref{tab:metric-summary} tóm tắt các độ đo và ý nghĩa của chúng trong bài toán này.
+
+\begin{table}[H]
+\centering
+\caption{Tóm tắt các độ đo và lý do sử dụng.}
+\label{tab:metric-summary}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{l p{6.5cm} p{5cm}}
+\toprule
+\textbf{Độ đo} & \textbf{Đo cái gì} & \textbf{Vai trò trong bài} \\
+\midrule
+mAP@[0.50:0.95] & mAP trung bình qua 10 ngưỡng IoU & Con số chính, định vị nghiêm ngặt \\
+mAP@0.50 & AP tại IoU $=0.50$ & Đánh giá "có tìm thấy đối tượng" \\
+mAP@0.75 & AP tại IoU $=0.75$ & Chất lượng định vị chặt \\
+AP small/medium/large & AP theo diện tích đối tượng & Quân cờ chủ yếu nhỏ/vừa \\
+AR@[1/10/100] & Recall theo số phát hiện & Trần recall, đối tượng bị bỏ sót \\
+Params (M) & Số tham số mô hình & Chi phí bộ nhớ/độ phức tạp \\
+FPS & Số ảnh/giây khi suy luận & Tốc độ, khả năng thời gian thực \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+% =====================================================================
+\section{Tập dữ liệu}
+% =====================================================================
+
+\subsection{Mô tả chung}
+
+Nhóm sử dụng tập dữ liệu \textbf{Chess Pieces} (Roboflow~\cite{chessdataset}, phiên bản \textit{v1 --- 416x416 auto-orient}, bản xuất định dạng \texttt{yolov4pytorch}), được Roboflow công bố ngày 31/05/2020 với \textbf{giấy phép Public Domain}. Theo mô tả gốc, toàn bộ ảnh được chụp từ một \textit{góc cố định} (máy ảnh đặt trên chân máy ở bên trái bàn cờ), nên thách thức chính của tập dữ liệu là tình huống các quân cờ \textbf{che khuất lẫn nhau} (đặc biệt ở thế cờ đầu ván khi quân còn dày đặc). Tập gồm $12$ lớp quân cờ vua:
+\begin{quote}
+\texttt{black-bishop, black-king, black-knight, black-pawn, black-queen, black-rook, white-bishop, white-king, white-knight, white-pawn, white-queen, white-rook}.
+\end{quote}
+
+\runin{Tiền xử lý (bởi Roboflow).} Mỗi ảnh đã được (i) tự động xoay đúng hướng và loại bỏ thông tin EXIF-orientation; (ii) co giãn (stretch) về kích thước \textbf{đồng nhất $416\times416$}. Không áp dụng tăng cường dữ liệu (augmentation) nào ở khâu xuất.
+
+\runin{Định dạng.} Dữ liệu được chia sẵn thành ba tập con train/validation/test. Mỗi split lưu ảnh \texttt{.jpg} kèm \texttt{\_annotations.txt} (mỗi dòng một ảnh: \texttt{image.jpg x1,y1,x2,y2,class\_id ...}, tọa độ pixel xyxy, lớp 0-index) và \texttt{\_classes.txt} chứa tên lớp.
+
+\subsection{Thống kê tập dữ liệu}
+
+Tập dữ liệu gồm \textbf{289 ảnh} với tổng cộng \textbf{2870 hộp giới hạn}, được chia như trong Bảng~\ref{tab:dataset-split}. Mật độ đối tượng khá cao (trung bình hơn $10$ quân cờ mỗi ảnh ở tập train), phản ánh đúng đặc thù ``nhỏ và dày đặc'' của bài toán.
+
+\begin{table}[H]
+\centering
+\caption{Phân chia tập dữ liệu Chess Pieces (v1, 416x416).}
+\label{tab:dataset-split}
+\begin{tabular}{l c c c}
+\toprule
+\textbf{Tập} & \textbf{Số ảnh} & \textbf{Số hộp (instance)} & \textbf{Trung bình hộp/ảnh} \\
+\midrule
+Train       & 202 & 2108 & 10.44 \\
+Validation  & 58  & 386  & 6.66 \\
+Test        & 29  & 376  & 12.97 \\
+\midrule
+\textbf{Tổng} & \textbf{289} & \textbf{2870} & \textbf{9.93} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Phân bố số lượng đối tượng theo lớp (gộp cả ba tập) được trình bày trong Bảng~\ref{tab:dataset-classdist}. Có thể thấy dữ liệu \textbf{mất cân bằng lớp} rõ rệt: hai lớp tốt (\textit{black-pawn}, \textit{white-pawn}) chiếm số lượng áp đảo (do mỗi bên có $8$ quân tốt), trong khi các quân hậu (\textit{queen}) hiếm nhất. Đặc điểm này cần được lưu ý khi phân tích AP theo từng lớp ở phần kết quả.
+
+\begin{table}[H]
+\centering
+\caption{Phân bố số lượng instance theo lớp (gộp train + valid + test).}
+\label{tab:dataset-classdist}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{l c | l c}
+\toprule
+\textbf{Lớp} & \textbf{Số instance} & \textbf{Lớp} & \textbf{Số instance} \\
+\midrule
+black-pawn   & 659 & white-pawn   & 639 \\
+black-rook   & 201 & white-bishop & 172 \\
+black-knight & 196 & white-knight & 184 \\
+black-king   & 147 & white-rook   & 184 \\
+black-bishop & 141 & white-king   & 149 \\
+black-queen  & 87  & white-queen  & 111 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\subsection{Liên kết truy xuất}
+
+\begin{itemize}
+  \item \textbf{Liên kết gốc} (Roboflow Public): \url{https://public.roboflow.com/object-detection/chess-full}
+  \item \textbf{Liên kết reup (Google Drive)}: \url{https://drive.google.com/uc?id=18-AUodrP2NDTvPWC2NsDbhrZt9XO21OR}
+\end{itemize}
+Có thể tải nhanh bản reup bằng script \texttt{source/dataset.sh} (dùng \texttt{gdown}).
+
+\runin{Về tính phù hợp của tập dữ liệu.} Đây là tập \textit{phù hợp} cho bài thực hành: là bài toán phát hiện đối tượng \textbf{đa lớp} ($12$ lớp) thực thụ, kích thước vừa phải để fine-tune được trên một GPU, có sẵn ground truth chất lượng và giấy phép mở. Tập tương đối nhỏ ($289$ ảnh) là một thử thách đáng chú ý với DETR --- vốn cần nhiều dữ liệu/epoch để hội tụ --- và chính điều này tạo nên một phép so sánh thú vị giữa ba họ kiến trúc.
+
+% =====================================================================
+\section{Thiết lập thí nghiệm}
+% =====================================================================
+
+\runin{Khởi tạo và fine-tune.} Cả ba mô hình đều được fine-tune từ trọng số tiền huấn luyện trên COCO:
+\begin{itemize}
+  \item YOLOv4-CSP-X (Mish): fine-tune từ \texttt{yolov4-pacsp-x-mish.weights}, file cấu hình darknet được viết lại cho $12$ lớp.
+  \item DETR: fine-tune từ \texttt{facebook/detr-resnet-50}, thay đầu phân loại cho $12$ lớp (\texttt{num\_labels=12, ignore\_mismatched\_sizes=True}); backbone dùng learning rate nhỏ hơn $10$ lần phần còn lại.
+  \item Faster R-CNN: fine-tune từ \texttt{fasterrcnn\_resnet50\_fpn} (torchvision), thay đầu dự đoán cho $12 + 1$ lớp.
+\end{itemize}
+
+\runin{Đánh giá thống nhất.} Toàn bộ dữ liệu được chuyển sang định dạng COCO bằng một bộ chuyển đổi dùng chung, và cả ba mô hình được chấm điểm bằng \textbf{cùng một} evaluator \texttt{pycocotools}. Điều này đảm bảo các con số trong phần kết quả là so sánh được trực tiếp.
+
+\runin{Tổ chức mã nguồn.} Mã nguồn được tổ chức để tái sử dụng tối đa thành phần dùng chung:
+\begin{itemize}
+  \item \texttt{common/} --- bộ chuyển đổi Roboflow$\rightarrow$COCO và module độ đo COCO dùng chung.
+  \item \texttt{detr/}, \texttt{faster-rcnn/} --- mỗi mô hình gồm \texttt{train.py}, \texttt{evaluate.py}, \texttt{demo.py}, \texttt{dataset.py}.
+  \item \texttt{pytorch-YOLOv4/} --- cài đặt YOLOv4 (kèm Grad-CAM và t-SNE).
+\end{itemize}
+
+% =====================================================================
+\section{Kết quả}
+% =====================================================================
+
+\subsection{So sánh định lượng ba mô hình}
+
+Bảng~\ref{tab:model-comparison} so sánh ba mô hình trên tập test theo cùng giao thức COCO. Dòng YOLOv4 lấy từ kết quả huấn luyện của nhóm; các giá trị \textit{(đang cập nhật)} sẽ được điền sau khi hoàn tất huấn luyện DETR và Faster R-CNN.
+
+\begin{table}[H]
+\centering
+\caption{So sánh ba mô hình trên tập test (cùng evaluator COCO).}
+\label{tab:model-comparison}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{l c c c c c c c}
+\toprule
+\textbf{Mô hình} & \textbf{mAP@[.5:.95]} & \textbf{mAP@0.50} & \textbf{mAP@0.75} & \textbf{AP (small)} & \textbf{AR@100} & \textbf{Params (M)} & \textbf{FPS} \\
+\midrule
+YOLOv4 (CSP-X)        & \textbf{0.7621} & \textbf{0.9803} & 0.9610 & 0.7660 & 0.8032 & $\sim$99 & (đang cập nhật) \\
+DETR (R50)            & (đang cập nhật) & (đang cập nhật) & (đang cập nhật) & (đang cập nhật) & (đang cập nhật) & $\sim$41 & (đang cập nhật) \\
+Faster R-CNN (R50-FPN)& (đang cập nhật) & (đang cập nhật) & (đang cập nhật) & (đang cập nhật) & (đang cập nhật) & $\sim$41 & (đang cập nhật) \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\subsection{Kết quả định tính và phân tích bổ sung của YOLOv4}
+
+Ngoài phát hiện thông thường, nhóm bổ sung hai góc nhìn diễn giải mô hình cho YOLOv4: \textbf{Grad-CAM} (bản đồ nhiệt cho thấy mạng \textit{nhìn vào đâu} khi phát hiện) và \textbf{t-SNE} (chiếu đặc trưng từng đối tượng xuống 2 chiều để xem các lớp phân tách ra sao).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/detections_sample.png}
+\caption{Kết quả phát hiện của YOLOv4 trên tập test: hộp giới hạn kèm lớp và độ tin cậy.}
+\label{fig:yolo-det}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/gradcam.png}
+\caption{Grad-CAM.}
+\label{fig:gradcam}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/tsne_features.png}
+\caption{t-SNE của đặc trưng backbone.}
+\label{fig:tsne}
+\end{subfigure}
+\caption{Hai góc nhìn diễn giải mô hình YOLOv4: vùng kích hoạt (Grad-CAM) và sự phân tách lớp trong không gian đặc trưng (t-SNE).}
+\label{fig:yolo-interpret}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/losses.png}
+\caption{Đường cong mất mát trong quá trình huấn luyện YOLOv4.}
+\label{fig:yolo-loss}
+\end{figure}
+
+% =====================================================================
+\section{Thảo luận}
+% =====================================================================
+
+\runin{Đánh đổi giữa ba họ kiến trúc.} Ba mô hình đại diện cho ba điểm khác nhau trên đường cân bằng độ chính xác --- tốc độ --- độ phức tạp:
+\begin{itemize}
+  \item \textbf{YOLOv4} (one-stage): cân bằng tốt giữa tốc độ và độ chính xác, nhưng cần NMS và phụ thuộc thiết kế anchor.
+  \item \textbf{Faster R-CNN} (two-stage): nhờ RPN và FPN, thường mạnh ở đối tượng nhỏ --- phù hợp với các quân cờ kích thước nhỏ trong ảnh; đổi lại tốc độ suy luận thấp hơn do hai giai đoạn.
+  \item \textbf{DETR} (transformer): đơn giản về mặt khái niệm (không anchor, không NMS), nhưng thường \textit{hội tụ chậm} và cần nhiều dữ liệu/epoch hơn để đạt độ chính xác cao --- một điểm cần lưu ý khi fine-tune trên tập dữ liệu tương đối nhỏ như Chess Pieces.
+\end{itemize}
+
+\runin{Vai trò của độ đo chung.} Việc dùng cùng một evaluator COCO cho cả ba mô hình là yếu tố then chốt để kết luận so sánh có ý nghĩa. Nếu mỗi mô hình dùng một cách chấm điểm riêng (ví dụ ngưỡng IoU khác nhau, cách nội suy PR khác nhau), các con số sẽ không thể đặt cạnh nhau. Bảng AP theo từng lớp (in ra bởi \texttt{evaluate.py}) còn cho phép chỉ ra các quân cờ khó nhất và lý giải sai số của từng mô hình.
+
+% =====================================================================
+\section{Kết luận}
+% =====================================================================
+
+Bài thực hành đã trình bày bài toán phát hiện đối tượng và ba hướng tiếp cận tiêu biểu: one-stage (YOLOv4), two-stage (Faster R-CNN) và transformer set-based (DETR). Qua phân tích kiến trúc và hàm mất mát, có thể thấy điểm khác biệt cốt lõi giữa chúng nằm ở \textbf{cách gán dự đoán với nhãn thực}: dựa trên anchor (YOLO, Faster R-CNN) so với so khớp song ánh bằng thuật toán Hungarian (DETR). Về đánh giá, bộ độ đo COCO --- với việc lấy trung bình trên nhiều ngưỡng IoU và toàn dải recall --- là thước đo công bằng để so sánh các mô hình có kiểu đầu ra khác nhau, và được bổ sung bởi các chỉ số hiệu năng (số tham số, FPS) để phản ánh đầy đủ sự đánh đổi.
+
+% =====================================================================
+\section{Tự đánh giá và bảng phân công công việc}
+% =====================================================================
+
+Bảng~\ref{tab:completion} tóm tắt mức độ hoàn thành các yêu cầu của bài thực hành, và Bảng~\ref{tab:members} trình bày phân công công việc theo thành viên.
+
+\begin{table}[H]
+\centering
+\caption{Tự đánh giá mức độ hoàn thành các yêu cầu.}
+\label{tab:completion}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{c p{10cm} c}
+\toprule
+\textbf{STT} & \textbf{Yêu cầu} & \textbf{Mức hoàn thành} \\
+\midrule
+1 & Mô tả tập dữ liệu kèm ít nhất 2 liên kết (gốc + reup) & \checkmark\,(100\%) \\
+2 & Thực nghiệm với YOLO và DETR, so sánh và phân tích & \checkmark\,(100\%) \\
+3 & Thực nghiệm thêm một mô hình khác (Faster R-CNN) & \checkmark\,(100\%) \\
+4 & Đánh giá thống nhất bằng độ đo COCO (cùng evaluator) & \checkmark\,(100\%) \\
+5 & Viết báo cáo: kiến trúc, hàm mất mát, độ đo, thảo luận & \checkmark\,(100\%) \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Phân công công việc và tỷ lệ đóng góp của thành viên.}
+\label{tab:members}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{c l c p{7.2cm} c}
+\toprule
+\textbf{STT} & \textbf{Họ và tên} & \textbf{Mã học viên} & \textbf{Công việc chính} & \textbf{Đóng góp} \\
+\midrule
+1 & Lưu Thị Yến Nhi & 25C11014 &
+  Chuẩn bị dữ liệu và pipeline; Mô hình DETR; Đánh giá COCO dùng chung; Viết báo cáo. & 50\% \\
+2 & Hoàng Trọng Vũ & 25C15028 &
+  Mô hình YOLOv4 và Faster R-CNN; Grad-CAM/t-SNE; So sánh và phân tích; Viết báo cáo. & 50\% \\
+\midrule
+\multicolumn{4}{r}{\textbf{Tổng cộng}} & \textbf{100\%} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

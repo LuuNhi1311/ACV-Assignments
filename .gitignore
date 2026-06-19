@@ -1,0 +1,28 @@
+.DS_Store
+__pycache__/
+.claude/
+
+# Generic large/generated artifacts
+**/*.csv
+**/*.zip
+**/*.npy
+
+# Datasets (downloaded via dataset.sh) — covers P01/P02/P03
+**/source/data/
+**/source/pytorch-YOLOv4/data/
+
+# --- P03 object-detection lab ---
+# Generated COCO annotations + prediction dumps
+**/_annotations.coco.json
+**/predictions_*.json
+
+# Model checkpoints / weights
+**/checkpoints/
+**/*.pt
+**/*.pth
+**/*.weights
+
+# Demo / eval outputs (committed YOLO figures live under doc/figures, not ignored)
+**/source/pytorch-YOLOv4/visualizations/detections/
+**/source/detr/visualizations/
+**/source/faster-rcnn/visualizations/
