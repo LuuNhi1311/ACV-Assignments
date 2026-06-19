@@ -1,0 +1,18 @@
+# Force LF for scripts/code so they run on Linux/WSL/servers regardless of the
+# committer's OS or git autocrlf setting. This overrides core.autocrlf on checkout.
+*.sh        text eol=lf
+*.py        text eol=lf
+*.yaml      text eol=lf
+*.yml       text eol=lf
+*.cfg       text eol=lf
+
+# Binary assets (never touch line endings)
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.pt        binary
+*.pth       binary
+*.weights   binary
+*.zip       binary
+*.pdf       binary
