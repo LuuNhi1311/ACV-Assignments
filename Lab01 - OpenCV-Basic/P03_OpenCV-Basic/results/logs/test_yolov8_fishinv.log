@@ -1,0 +1,74 @@
+[coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv.yaml [test]: 499 imgs, 940 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv/notebooks/datasets/FishInvSplit/test/images/_annotations.coco.json
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+Eval yolov8: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/yolov8_fishinv/weights/best.pt [test] 499 imgs, 43.6M params
+
+==== COCO bbox: yolov8 ====
+  AP@[.50:.95|all]   = 0.7531
+  AP@[.50|all]       = 0.8947
+  AP@[.75|all]       = 0.8093
+  AP@[small]         = 0.5099
+  AP@[medium]        = 0.4894
+  AP@[large]         = 0.7863
+  AR@[maxDet=1]      = 0.6558
+  AR@[maxDet=10]     = 0.7976
+  AR@[maxDet=100]    = 0.8173
+  AR@[small]         = 0.6485
+  AR@[medium]        = 0.6123
+  AR@[large]         = 0.8443
+FPS 38.08 | Params 43.6M
+Per-class AP:
+  bolbometopon_muricatum 0.8973
+  chaetodontidae     0.8244
+  cheilinus_undulatus 0.9727
+  cromileptes_altivelis 0.9577
+  fish               0.4520
+  haemulidae         0.9138
+  lutjanidae         0.7164
+  muraenidae         0.7882
+  scaridae           0.7016
+  serranidae         0.7046
+  urchin             0.4448
+  giant_clam         0.5170
+  sea_cucumber       0.9494
+  crown_of_thorns    0.7081
+  lobster            0.7488
+[coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv.yaml [test]: 499 imgs, 940 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv/notebooks/datasets/FishInvSplit/test/images/_annotations.coco.json
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+Eval yolov8: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/yolov8_fishinv/weights/best.pt [test] 499 imgs, 43.6M params
+
+==== COCO bbox: yolov8 ====
+  AP@[.50:.95|all]   = 0.7531
+  AP@[.50|all]       = 0.8947
+  AP@[.75|all]       = 0.8093
+  AP@[small]         = 0.5099
+  AP@[medium]        = 0.4894
+  AP@[large]         = 0.7863
+  AR@[maxDet=1]      = 0.6558
+  AR@[maxDet=10]     = 0.7976
+  AR@[maxDet=100]    = 0.8173
+  AR@[small]         = 0.6485
+  AR@[medium]        = 0.6123
+  AR@[large]         = 0.8443
+FPS 33.93 | Params 43.6M
+Per-class AP:
+  bolbometopon_muricatum 0.8973
+  chaetodontidae     0.8244
+  cheilinus_undulatus 0.9727
+  cromileptes_altivelis 0.9577
+  fish               0.4520
+  haemulidae         0.9138
+  lutjanidae         0.7164
+  muraenidae         0.7882
+  scaridae           0.7016
+  serranidae         0.7046
+  urchin             0.4448
+  giant_clam         0.5170
+  sea_cucumber       0.9494
+  crown_of_thorns    0.7081
+  lobster            0.7488
