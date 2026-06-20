@@ -1,0 +1,74 @@
+[coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv.yaml [test]: 499 imgs, 940 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv/notebooks/datasets/FishInvSplit/test/images/_annotations.coco.json
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+Eval rtdetr: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/rtdetr_fishinv/weights/best.pt [test] 499 imgs, 32.8M params
+
+==== COCO bbox: rtdetr ====
+  AP@[.50:.95|all]   = 0.6667
+  AP@[.50|all]       = 0.8877
+  AP@[.75|all]       = 0.7759
+  AP@[small]         = 0.3503
+  AP@[medium]        = 0.3530
+  AP@[large]         = 0.7015
+  AR@[maxDet=1]      = 0.6005
+  AR@[maxDet=10]     = 0.7260
+  AR@[maxDet=100]    = 0.7582
+  AR@[small]         = 0.5636
+  AR@[medium]        = 0.5938
+  AR@[large]         = 0.7800
+FPS 25.38 | Params 32.8M
+Per-class AP:
+  bolbometopon_muricatum 0.8171
+  chaetodontidae     0.7202
+  cheilinus_undulatus 0.8536
+  cromileptes_altivelis 0.8008
+  fish               0.3051
+  haemulidae         0.8598
+  lutjanidae         0.6502
+  muraenidae         0.7276
+  scaridae           0.6244
+  serranidae         0.6835
+  urchin             0.3426
+  giant_clam         0.4600
+  sea_cucumber       0.8183
+  crown_of_thorns    0.6050
+  lobster            0.7326
+[coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv.yaml [test]: 499 imgs, 940 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv/notebooks/datasets/FishInvSplit/test/images/_annotations.coco.json
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+Eval rtdetr: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/rtdetr_fishinv/weights/best.pt [test] 499 imgs, 32.8M params
+
+==== COCO bbox: rtdetr ====
+  AP@[.50:.95|all]   = 0.6667
+  AP@[.50|all]       = 0.8877
+  AP@[.75|all]       = 0.7759
+  AP@[small]         = 0.3503
+  AP@[medium]        = 0.3530
+  AP@[large]         = 0.7015
+  AR@[maxDet=1]      = 0.6005
+  AR@[maxDet=10]     = 0.7260
+  AR@[maxDet=100]    = 0.7582
+  AR@[small]         = 0.5636
+  AR@[medium]        = 0.5938
+  AR@[large]         = 0.7800
+FPS 25.47 | Params 32.8M
+Per-class AP:
+  bolbometopon_muricatum 0.8171
+  chaetodontidae     0.7202
+  cheilinus_undulatus 0.8536
+  cromileptes_altivelis 0.8008
+  fish               0.3051
+  haemulidae         0.8598
+  lutjanidae         0.6502
+  muraenidae         0.7276
+  scaridae           0.6244
+  serranidae         0.6835
+  urchin             0.3426
+  giant_clam         0.4600
+  sea_cucumber       0.8183
+  crown_of_thorns    0.6050
+  lobster            0.7326
