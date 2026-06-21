@@ -1,0 +1,38 @@
+Loading weights:   0%|          | 0/530 [00:00<?, ?it/s]Loading weights:  85%|████████▍ | 450/530 [00:00<00:00, 4494.39it/s]Loading weights: 100%|██████████| 530/530 [00:00<00:00, 5120.37it/s]
+[coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv.yaml [test]: 499 imgs, 940 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/fishinv/notebooks/datasets/FishInvSplit/test/images/_annotations.coco.json
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+Eval DETR: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/detr_fishinv/best [test] 499 imgs, 41.5M params
+
+==== COCO bbox: DETR ====
+  AP@[.50:.95|all]   = 0.6294
+  AP@[.50|all]       = 0.8157
+  AP@[.75|all]       = 0.6844
+  AP@[small]         = 0.1841
+  AP@[medium]        = 0.3001
+  AP@[large]         = 0.6734
+  AR@[maxDet=1]      = 0.6126
+  AR@[maxDet=10]     = 0.7402
+  AR@[maxDet=100]    = 0.7840
+  AR@[small]         = 0.3545
+  AR@[medium]        = 0.5146
+  AR@[large]         = 0.8208
+FPS 42.46 | Params 41.5M
+Per-class AP:
+  bolbometopon_muricatum 0.8099
+  chaetodontidae     0.5413
+  cheilinus_undulatus 0.9313
+  cromileptes_altivelis 0.9297
+  fish               0.1588
+  haemulidae         0.9094
+  lutjanidae         0.5064
+  muraenidae         0.5762
+  scaridae           0.6904
+  serranidae         0.4728
+  urchin             0.2560
+  giant_clam         0.4114
+  sea_cucumber       0.7804
+  crown_of_thorns    0.7438
+  lobster            0.7234
