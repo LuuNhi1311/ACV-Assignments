@@ -1,29 +1,26 @@
-Traceback (most recent call last):
-  File "/home/nina/venvs/ai/lib/python3.12/site-packages/transformers/utils/hub.py", line 437, in cached_files
-    hf_hub_download(
-  File "/home/nina/venvs/ai/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 84, in _inner_fn
-    validate_repo_id(arg_value)
-  File "/home/nina/venvs/ai/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 132, in validate_repo_id
-    raise HFValidationError(
-huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/detr_megafauna/best'. Use `repo_type` argument if needed.
+Loading weights:   0%|          | 0/530 [00:00<?, ?it/s]Loading weights:  87%|████████▋ | 459/530 [00:00<00:00, 4589.16it/s]Loading weights: 100%|██████████| 530/530 [00:00<00:00, 5189.21it/s]
+[coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna.yaml [test]: 253 imgs, 293 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna/notebooks/datasets/MegaFaunaSplit/test/images/_annotations.coco.json
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+Eval DETR: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/detr_megafauna/best [test] 253 imgs, 41.5M params
 
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/detr/evaluate.py", line 53, in <module>
-    main()
-  File "/mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/detr/evaluate.py", line 38, in main
-    proc = DetrImageProcessor.from_pretrained(a.weights)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/nina/venvs/ai/lib/python3.12/site-packages/transformers/image_processing_base.py", line 179, in from_pretrained
-    image_processor_dict, kwargs = cls.get_image_processor_dict(pretrained_model_name_or_path, **kwargs)
-                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/nina/venvs/ai/lib/python3.12/site-packages/transformers/image_processing_base.py", line 282, in get_image_processor_dict
-    resolved_processor_file = cached_file(
-                              ^^^^^^^^^^^^
-  File "/home/nina/venvs/ai/lib/python3.12/site-packages/transformers/utils/hub.py", line 293, in cached_file
-    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/nina/venvs/ai/lib/python3.12/site-packages/transformers/utils/hub.py", line 488, in cached_files
-    raise OSError(f"{e}") from e
-OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/detr_megafauna/best'. Use `repo_type` argument if needed.
+==== COCO bbox: DETR ====
+  AP@[.50:.95|all]   = 0.5625
+  AP@[.50|all]       = 0.7511
+  AP@[.75|all]       = 0.6336
+  AP@[small]         = -1.0000
+  AP@[medium]        = 0.1848
+  AP@[large]         = 0.5687
+  AR@[maxDet=1]      = 0.5092
+  AR@[maxDet=10]     = 0.6586
+  AR@[maxDet=100]    = 0.6972
+  AR@[small]         = -1.0000
+  AR@[medium]        = 0.4329
+  AR@[large]         = 0.6975
+FPS 35.66 | Params 41.5M
+Per-class AP:
+  ray                0.6215
+  shark              0.2893
+  turtle             0.7768
