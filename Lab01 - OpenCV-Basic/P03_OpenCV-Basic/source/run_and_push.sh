@@ -2,7 +2,8 @@
 # Train all models, collect light results into ../results/, git-push after each.
 #   nohup bash source/run_and_push.sh > run_and_push.out 2>&1 &
 # env: GROUP(all|ultra|detr) DATASETS GPU EPOCHS_ULTRA EPOCHS_DETR BATCH_ULTRA
-#      BATCH_DETR IMGSZ WORKERS PIN_MEMORY ULTRA_ENV DETR_ENV PUSH(0/1)
+#      BATCH_RTDETR BATCH_DETR IMGSZ WORKERS PIN_MEMORY ULTRA_ENV DETR_ENV PUSH(0/1)
+# Note: RT-DETR needs a smaller batch than YOLOv8 (transformer = VRAM-heavy).
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJ="$(cd "$ROOT/.." && pwd)"
@@ -10,8 +11,9 @@ REPO="$(git -C "$ROOT" rev-parse --show-toplevel)"
 RESULTS="$PROJ/results"; LOGS="$RESULTS/logs"; FIGS="$RESULTS/figures"; PREDS="$RESULTS/preds"
 mkdir -p "$LOGS" "$FIGS" "$PREDS"
 GROUP="${GROUP:-all}"; DATASETS="${DATASETS:-megafauna fishinv}"; GPU="${GPU:-0}"
-EPOCHS_ULTRA="${EPOCHS_ULTRA:-100}"; EPOCHS_DETR="${EPOCHS_DETR:-100}"
-BATCH_ULTRA="${BATCH_ULTRA:-16}"; BATCH_DETR="${BATCH_DETR:-4}"; IMGSZ="${IMGSZ:-640}"; PUSH="${PUSH:-1}"
+EPOCHS_ULTRA="${EPOCHS_ULTRA:-200}"; EPOCHS_DETR="${EPOCHS_DETR:-200}"
+BATCH_ULTRA="${BATCH_ULTRA:-32}"; BATCH_RTDETR="${BATCH_RTDETR:-8}"; BATCH_DETR="${BATCH_DETR:-8}"
+IMGSZ="${IMGSZ:-640}"; PUSH="${PUSH:-1}"
 
 log() { echo "[$(date '+%F %T')] $*"; }
 
@@ -23,6 +25,7 @@ activate_env() {
 
 snapshot() {  # $1 = label
   python "$ROOT/common/collect_results.py" -datasets $DATASETS > "$RESULTS/metrics.md" 2>>"$LOGS/collect.log" || log "WARN collect"
+  python "$ROOT/common/plots.py" -datasets $DATASETS >>"$LOGS/plots.log" 2>&1 || log "WARN plots"
   git -C "$REPO" add -f "$RESULTS" 2>/dev/null || true
   git -C "$REPO" diff --cached --quiet 2>/dev/null && { log "nothing to commit"; return; }
   git -C "$REPO" commit -m "results: $1 @ $(date '+%F %H:%M')" >/dev/null 2>&1 && log "commit $1" || log "WARN commit"
@@ -44,7 +47,8 @@ ultra() {
     DATA="$ROOT/data/${DS}.yaml"; [ -f "$DATA" ] || { log "SKIP $DS (no yaml)"; continue; }
     for ARCH in yolov8 rtdetr; do
       TAG="${ARCH}_${DS}"
-      ARCH=$ARCH DATA=$DATA GPU=$GPU EPOCHS=$EPOCHS_ULTRA BATCH=$BATCH_ULTRA IMGSZ=$IMGSZ \
+      B=$BATCH_ULTRA; [ "$ARCH" = rtdetr ] && B=$BATCH_RTDETR
+      ARCH=$ARCH DATA=$DATA GPU=$GPU EPOCHS=$EPOCHS_ULTRA BATCH=$B IMGSZ=$IMGSZ \
         bash "$ROOT/train_ultralytics.sh" 2>&1 | tee "$LOGS/train_$TAG.log" || log "WARN train $TAG"
       ARCH=$ARCH DATA=$DATA GPU=$GPU SPLIT=test \
         bash "$ROOT/test_ultralytics.sh" 2>&1 | tee "$LOGS/test_$TAG.log" || log "WARN eval $TAG"

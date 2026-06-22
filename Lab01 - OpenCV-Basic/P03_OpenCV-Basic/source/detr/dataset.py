@@ -21,8 +21,17 @@ class CocoDetection(torch.utils.data.Dataset):
         return enc["pixel_values"][0], enc["labels"][0]
 
 
-def make_collate_fn(processor):
+def make_collate_fn(processor=None):
+    # Pad variable-size images to the batch max + build pixel_mask. Manual (torch)
+    # so it works across transformers versions (processor.pad() args changed).
     def collate(batch):
-        enc = processor.pad([b[0] for b in batch], return_tensors="pt")
-        return {"pixel_values": enc["pixel_values"], "pixel_mask": enc["pixel_mask"], "labels": [b[1] for b in batch]}
+        pvs = [b[0] for b in batch]
+        labels = [b[1] for b in batch]
+        h = max(p.shape[1] for p in pvs); w = max(p.shape[2] for p in pvs)
+        padded = pvs[0].new_zeros(len(pvs), pvs[0].shape[0], h, w)
+        mask = torch.zeros(len(pvs), h, w, dtype=torch.long)
+        for i, p in enumerate(pvs):
+            padded[i, :, : p.shape[1], : p.shape[2]] = p
+            mask[i, : p.shape[1], : p.shape[2]] = 1
+        return {"pixel_values": padded, "pixel_mask": mask, "labels": labels}
     return collate

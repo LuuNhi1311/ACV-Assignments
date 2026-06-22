@@ -35,6 +35,8 @@ def main():
     a = p.parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = a.gpu
     dev = torch.device("cuda" if a.gpu != "-1" and torch.cuda.is_available() else "cpu")
+    if not os.path.isdir(a.weights):
+        raise SystemExit("[detr] checkpoint not found: %s (train DETR first)" % a.weights)
     proc = DetrImageProcessor.from_pretrained(a.weights)
     model = DetrForObjectDetection.from_pretrained(a.weights).to(dev).eval()
     npar = sum(x.numel() for x in model.parameters()) / 1e6

@@ -23,7 +23,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("-arch", choices=["yolov8", "rtdetr"], required=True)
     p.add_argument("-data", required=True); p.add_argument("-weights", default=None)
-    p.add_argument("-epochs", type=int, default=100); p.add_argument("-batch", type=int, default=16)
+    p.add_argument("-epochs", type=int, default=200); p.add_argument("-batch", type=int, default=16)
     p.add_argument("-imgsz", type=int, default=640); p.add_argument("-workers", type=int, default=8)
     p.add_argument("-device", default="0"); p.add_argument("-project", default="runs"); p.add_argument("-name", default=None)
     a = p.parse_args()

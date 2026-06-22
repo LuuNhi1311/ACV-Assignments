@@ -20,7 +20,7 @@ def loader(data_yaml, split, proc, batch, workers, train):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("-data", required=True); p.add_argument("-model", default="facebook/detr-resnet-50")
-    p.add_argument("-epochs", type=int, default=100); p.add_argument("-batch", type=int, default=4)
+    p.add_argument("-epochs", type=int, default=200); p.add_argument("-batch", type=int, default=4)
     p.add_argument("-lr", type=float, default=1e-4); p.add_argument("-lr-backbone", dest="lrb", type=float, default=1e-5)
     p.add_argument("-wd", type=float, default=1e-4); p.add_argument("-workers", type=int, default=4)
     p.add_argument("-train-split", dest="tr", default="train"); p.add_argument("-val-split", dest="va", default="val")
