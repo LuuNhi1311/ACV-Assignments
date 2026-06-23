@@ -1,50 +1,25 @@
 [coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna.yaml [test]: 253 imgs, 293 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna/notebooks/datasets/MegaFaunaSplit/test/images/_annotations.coco.json
 loading annotations into memory...
-Done (t=0.00s)
-creating index...
-index created!
-Eval rtdetr: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/rtdetr_megafauna/weights/best.pt [test] 253 imgs, 32.8M params
-
-==== COCO bbox: rtdetr ====
-  AP@[.50:.95|all]   = 0.6477
-  AP@[.50|all]       = 0.8167
-  AP@[.75|all]       = 0.6933
-  AP@[small]         = -1.0000
-  AP@[medium]        = 0.3415
-  AP@[large]         = 0.6539
-  AR@[maxDet=1]      = 0.5403
-  AR@[maxDet=10]     = 0.6986
-  AR@[maxDet=100]    = 0.7640
-  AR@[small]         = -1.0000
-  AR@[medium]        = 0.4382
-  AR@[large]         = 0.7651
-FPS 15.07 | Params 32.8M
-Per-class AP:
-  ray                0.6690
-  shark              0.4213
-  turtle             0.8527
-[coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna.yaml [test]: 253 imgs, 293 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna/notebooks/datasets/MegaFaunaSplit/test/images/_annotations.coco.json
-loading annotations into memory...
 Done (t=0.01s)
 creating index...
 index created!
 Eval rtdetr: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/rtdetr_megafauna/weights/best.pt [test] 253 imgs, 32.8M params
 
 ==== COCO bbox: rtdetr ====
-  AP@[.50:.95|all]   = 0.6477
-  AP@[.50|all]       = 0.8167
-  AP@[.75|all]       = 0.6933
+  AP@[.50:.95|all]   = 0.6454
+  AP@[.50|all]       = 0.8630
+  AP@[.75|all]       = 0.7608
   AP@[small]         = -1.0000
-  AP@[medium]        = 0.3415
-  AP@[large]         = 0.6539
-  AR@[maxDet=1]      = 0.5403
-  AR@[maxDet=10]     = 0.6986
-  AR@[maxDet=100]    = 0.7640
+  AP@[medium]        = 0.2912
+  AP@[large]         = 0.6536
+  AR@[maxDet=1]      = 0.4977
+  AR@[maxDet=10]     = 0.6844
+  AR@[maxDet=100]    = 0.7577
   AR@[small]         = -1.0000
-  AR@[medium]        = 0.4382
-  AR@[large]         = 0.7651
-FPS 17.54 | Params 32.8M
+  AR@[medium]        = 0.6921
+  AR@[large]         = 0.7589
+FPS 13.36 | Params 32.8M
 Per-class AP:
-  ray                0.6690
-  shark              0.4213
-  turtle             0.8527
+  ray                0.7300
+  shark              0.4689
+  turtle             0.7374
