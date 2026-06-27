@@ -1,4 +1,4 @@
-Loading weights:   0%|          | 0/530 [00:00<?, ?it/s]Loading weights:  87%|████████▋ | 459/530 [00:00<00:00, 4589.16it/s]Loading weights: 100%|██████████| 530/530 [00:00<00:00, 5189.21it/s]
+Loading weights:   0%|          | 0/530 [00:00<?, ?it/s]Loading weights:  70%|███████   | 373/530 [00:00<00:00, 3721.83it/s]Loading weights: 100%|██████████| 530/530 [00:00<00:00, 3481.88it/s]
 [coco] /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna.yaml [test]: 253 imgs, 293 boxes -> /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/data/megafauna/notebooks/datasets/MegaFaunaSplit/test/images/_annotations.coco.json
 loading annotations into memory...
 Done (t=0.01s)
@@ -7,20 +7,20 @@ index created!
 Eval DETR: /mnt/c/Users/da_nina/Desktop/project/master-cs/ACV-Assignments/Lab01 - OpenCV-Basic/P03_OpenCV-Basic/source/runs/detr_megafauna/best [test] 253 imgs, 41.5M params
 
 ==== COCO bbox: DETR ====
-  AP@[.50:.95|all]   = 0.5625
-  AP@[.50|all]       = 0.7511
-  AP@[.75|all]       = 0.6336
+  AP@[.50:.95|all]   = 0.5660
+  AP@[.50|all]       = 0.7776
+  AP@[.75|all]       = 0.6101
   AP@[small]         = -1.0000
-  AP@[medium]        = 0.1848
-  AP@[large]         = 0.5687
-  AR@[maxDet=1]      = 0.5092
-  AR@[maxDet=10]     = 0.6586
-  AR@[maxDet=100]    = 0.6972
+  AP@[medium]        = 0.2853
+  AP@[large]         = 0.5719
+  AR@[maxDet=1]      = 0.5104
+  AR@[maxDet=10]     = 0.6436
+  AR@[maxDet=100]    = 0.6982
   AR@[small]         = -1.0000
-  AR@[medium]        = 0.4329
-  AR@[large]         = 0.6975
-FPS 35.66 | Params 41.5M
+  AR@[medium]        = 0.3395
+  AR@[large]         = 0.7063
+FPS 37.80 | Params 41.5M
 Per-class AP:
-  ray                0.6215
-  shark              0.2893
-  turtle             0.7768
+  ray                0.5390
+  shark              0.3810
+  turtle             0.7780
